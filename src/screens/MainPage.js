@@ -22,7 +22,7 @@ function MainPage({ navigation }) {
             <Icon name="user" size={24} color="black" />
             {isDropdownOpen && (
               <View style={styles.dropdownContent}>
-                <TouchableOpacity style={styles.dropdownItem}>
+                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigation.navigate('User Profile')}>
                   <Text>Profile</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem}>

@@ -13,7 +13,7 @@ function AllPatients({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.pageHeading}>Patients</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => { /* Handle the add user action */ }}>
+        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddPatients')}>
           <Icon name="user-plus" size={17} color="white" />
         </TouchableOpacity>
       </View>
@@ -29,11 +29,11 @@ function AllPatients({ navigation }) {
                 <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
                   <Icon name="trash" size={20} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle edit user action */ }}>
+                <TouchableOpacity style={styles.buttonFilled} onPress={() => { navigation.navigate('Edit Patient Details') }}>
                   <Icon name="pencil" size={20} color="white" />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => { /* Handle view details action */ }}>
+              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => {  navigation.navigate('Patient Details') }}>
                 <Text style={styles.viewDetailsButtonText}>View Details</Text>
               </TouchableOpacity>
             </View>

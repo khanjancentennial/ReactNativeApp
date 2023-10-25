@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
 
-function RegisterScreen({ navigation }) {
+function EditUserProfileScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -15,71 +15,22 @@ function RegisterScreen({ navigation }) {
   const genders = ['Male', 'Female'];
   const healthcareProviders = ['Doctor', 'Nurse'];
 
-  // const handleRegister = () => {
+  const handleRegister = () => {
     // Add your registration logic here
-    // console.log('Registering with the following information:');
-    // console.log('First Name:', firstName);
-    // console.log('Last Name:', lastName);
-    // console.log('Username:', username);
-    // console.log('Password:', password);
-    // console.log('Phone Number:', phoneNumber);
-    // console.log('Email:', email);
-    // console.log('Gender:', gender);
-    // console.log('Healthcare Provider:', healthcareProvider);
-
-    const handleRegister = () => {
-      const genderValue = gender === 'Male' ? 0 : 1;
-      const professionValue = healthcareProvider === 'Doctor' ? 0 : 1;
-      const registrationData = {
-        firstName,
-        lastName,
-        email,
-        password,
-        phoneNumber,
-        gender: genderValue,
-        healthcareProvider: professionValue,
-      };
-    
-      fetch('http://10.0.2.2:3000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-      })
-        .then((response) => {
-          if (response.ok) {
-            return response.json(); // Parse the response JSON
-          } else {
-            throw new Error('Registration failed');
-          }
-        })
-        .then((data) => {
-          if (data.success) {
-            // Handle the successful registration response
-            console.log('Registration successful');
-            // Redirect to the login screen
-            navigation.navigate('Login');
-          } else {
-            // Handle registration failure (data.success is false)
-            console.log('Registration failed');
-            // Display an error message to the user
-            Alert.alert('Registration Failed', 'Please check the information and try again.');
-          }
-        })
-        .catch((error) => {
-          // Handle any errors, including network or server errors
-          console.error('Error:', error);
-          Alert.alert('Error', 'An error occurred. Please try again later.');
-        });
-    };
-    
-    
-  // };
+    console.log('Registering with the following information:');
+    console.log('First Name:', firstName);
+    console.log('Last Name:', lastName);
+    console.log('Username:', username);
+    console.log('Password:', password);
+    console.log('Phone Number:', phoneNumber);
+    console.log('Email:', email);
+    console.log('Gender:', gender);
+    console.log('Healthcare Provider:', healthcareProvider);
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Register</Text>
+      <Text style={styles.heading}></Text>
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -134,12 +85,9 @@ function RegisterScreen({ navigation }) {
         />
       </View>
       <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-        <Text style={styles.loginButtonText}>Register</Text>
+        <Text style={styles.loginButtonText}>Update</Text>
       </TouchableOpacity>
-      <Text style={styles.loginText}>Already have an account?</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.loginLink}>Login here</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -147,15 +95,15 @@ function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'Too',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
   },
   heading: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#ED1703',
+    marginTop : 30,
+    color: '#ED1703'
   },
   input: {
     width: 300,
@@ -165,6 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 10,
     borderRadius: 10,
+    backgroundColor: 'white'
   },
   labelContainer: {
     flexDirection: 'column',
@@ -195,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen;
+export default EditUserProfileScreen;

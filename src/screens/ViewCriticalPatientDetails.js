@@ -2,72 +2,59 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function ClinicalTestDetails({navigation, route }) {
+function ViewCritricalPatientDetails({ route }) {
   // Get the details passed from the previous page
-  const { name, caseNumber, testDate, bloodPressure, respiratoryRate, bloodOxygenLevel, heartRate, gender, chiefComplaint, pastMedicalHistory, medicalDiagnosis, medicalPrescription } = route.params;
+//   const { name, caseNumber, testDate, bloodPressure, respiratoryRate, bloodOxygenLevel, heartRate, gender, chiefComplaint, pastMedicalHistory, medicalDiagnosis, medicalPrescription } = route.params;
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.pageHeading}>Clinical Test Details</Text>
-      </View>
+      
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Patient's Name:</Text>
-          <Text style={styles.detailInfo}>{name}</Text>
+          <Text style={styles.detailInfo}>Khanjan</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Case Number:</Text>
-          <Text style={styles.detailInfo}>{caseNumber}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Test Date:</Text>
-          <Text style={styles.detailInfo}>{testDate}</Text>
+          <Text style={styles.detailInfo}>123456</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Blood Pressure:</Text>
-          <Text style={styles.detailInfo}>{bloodPressure}</Text>
+          <Text style={styles.detailInfo}>112</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Respiratory Rate:</Text>
-          <Text style={styles.detailInfo}>{respiratoryRate}</Text>
+          <Text style={styles.detailInfo}>11</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Blood Oxygen Level:</Text>
-          <Text style={styles.detailInfo}>{bloodOxygenLevel}</Text>
+          <Text style={styles.detailInfo}>75</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Heart Rate:</Text>
-          <Text style={styles.detailInfo}>{heartRate}</Text>
+          <Text style={styles.detailInfo}>75</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Gender:</Text>
-          <Text style={styles.detailInfo}>{gender}</Text>
+          <Text style={styles.detailInfo}>Male</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Chief Complaint:</Text>
-          <Text style={styles.detailInfo}>{chiefComplaint}</Text>
+          <Text style={styles.detailInfo}>fever</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Past Medical History:</Text>
-          <Text style={styles.detailInfo}>{pastMedicalHistory}</Text>
+          <Text style={styles.detailInfo}>Fever</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Medical Diagnosis:</Text>
-          <Text style={styles.detailInfo}>{medicalDiagnosis}</Text>
+          <Text style={styles.detailInfo}>Fever</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Medical Prescription:</Text>
-          <Text style={styles.detailInfo}>{medicalPrescription}</Text>
+          <Text style={styles.detailInfo}>Fever</Text>
         </View>
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() => navigation.navigate('Edit Clinical Test')}>
-            <Icon name="edit" size={20} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
-            <Icon name="trash" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
+       
       </View>
     </View>
   );
@@ -131,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ClinicalTestDetails;
+export default ViewCritricalPatientDetails;

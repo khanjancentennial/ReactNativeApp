@@ -22,7 +22,7 @@ function CriticalPatients({ navigation }) {
               <Text style={styles.cardInfo}>{patient.caseNumber}</Text>
             </View>
             <View style={styles.cardRight}>
-              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => { /* Handle view details action */ }}>
+              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => navigation.navigate('Critrical Patient Details')}>
                 <Text style={styles.viewDetailsButtonText}>View Details</Text>
               </TouchableOpacity>
             </View>
