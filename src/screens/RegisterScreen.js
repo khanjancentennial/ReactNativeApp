@@ -11,6 +11,7 @@ function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState(''); // Will store 'Male' or 'Female'
   const [healthcareProvider, setHealthcareProvider] = useState(''); // Will store 'Doctor' or 'Nurse'
+  const [isLoading, setIsLoading] = useState(false); // State variable to track loading state
 
   const genders = ['Male', 'Female'];
   const healthcareProviders = ['Doctor', 'Nurse'];
