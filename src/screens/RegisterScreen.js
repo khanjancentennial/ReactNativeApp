@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
 
 function RegisterScreen({ navigation }) {
@@ -15,67 +15,73 @@ function RegisterScreen({ navigation }) {
   const genders = ['Male', 'Female'];
   const healthcareProviders = ['Doctor', 'Nurse'];
 
-  // const handleRegister = () => {
-    // Add your registration logic here
-    // console.log('Registering with the following information:');
-    // console.log('First Name:', firstName);
-    // console.log('Last Name:', lastName);
-    // console.log('Username:', username);
-    // console.log('Password:', password);
-    // console.log('Phone Number:', phoneNumber);
-    // console.log('Email:', email);
-    // console.log('Gender:', gender);
-    // console.log('Healthcare Provider:', healthcareProvider);
+  const handleRegister = () => {
+    if (!firstName || !lastName || !password || !phoneNumber || !email || !gender || !healthcareProvider) {
+      Alert.alert('Validation Error', 'Please fill in all fields.');
+      return;
+    }
 
-    const handleRegister = () => {
-      const genderValue = gender === 'Male' ? 0 : 1;
-      const professionValue = healthcareProvider === 'Doctor' ? 0 : 1;
-      const registrationData = {
-        firstName,
-        lastName,
-        email,
-        password,
-        phoneNumber,
-        gender: genderValue,
-        healthcareProvider: professionValue,
-      };
-    
-      fetch('http://10.0.2.2:3000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-      })
-        .then((response) => {
-          if (response.ok) {
-            return response.json(); // Parse the response JSON
-          } else {
-            throw new Error('Registration failed');
-          }
-        })
-        .then((data) => {
-          if (data.success) {
-            // Handle the successful registration response
-            console.log('Registration successful');
-            // Redirect to the login screen
-            navigation.navigate('Login');
-          } else {
-            // Handle registration failure (data.success is false)
-            console.log('Registration failed');
-            // Display an error message to the user
-            Alert.alert('Registration Failed', 'Please check the information and try again.');
-          }
-        })
-        .catch((error) => {
-          // Handle any errors, including network or server errors
-          console.error('Error:', error);
-          Alert.alert('Error', 'An error occurred. Please try again later.');
-        });
+    if (!/^\d+$/.test(phoneNumber) || phoneNumber.length !== 10) {
+      Alert.alert('Validation Error', 'Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    const genderValue = gender === 'Male' ? 0 : 1;
+    const professionValue = healthcareProvider === 'Doctor' ? 0 : 1;
+    const registrationData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNumber,
+      gender: genderValue,
+      healthcareProvider: professionValue,
     };
-    
-    
-  // };
+
+    setIsLoading(true); // Set loading state to true
+
+    fetch('http://10.0.2.2:3000/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registrationData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Registration failed');
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          Alert.alert('Registration Successful', 'Your registration was successful. Please try logging in.');
+          navigation.navigate('Login');
+        } else {
+          console.log('Registration failed');
+          Alert.alert('Registration Failed', 'Please check the information and try again.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        Alert.alert('Error', 'An error occurred. Please try again later.');
+      })
+      .finally(() => {
+        setIsLoading(false); // Set loading state to false when the process is completed
+      });
+  };
+
+  const isValidEmail = (email) => {
+    // Regular expression to validate email
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    return emailPattern.test(email);
+  };
 
   return (
     <View style={styles.container}>
@@ -92,12 +98,6 @@ function RegisterScreen({ navigation }) {
         value={lastName}
         onChangeText={(text) => setLastName(text)}
       />
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={(text) => setUsername(text)}
-      /> */}
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -133,9 +133,13 @@ function RegisterScreen({ navigation }) {
           onOptionSelect={setHealthcareProvider}
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-        <Text style={styles.loginButtonText}>Register</Text>
-      </TouchableOpacity>
+      {isLoading ? ( // Display loading indicator if isLoading is true
+        <ActivityIndicator size="large" color="#ED1703" />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+          <Text style={styles.loginButtonText}>Register</Text>
+        </TouchableOpacity>
+      )}
       <Text style={styles.loginText}>Already have an account?</Text>
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.loginLink}>Login here</Text>
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     flexDirection: 'column',
-    alignItems: 'center', // Center the labels
+    alignItems: 'center',
     marginBottom: 10,
   },
   label: {
