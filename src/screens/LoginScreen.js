@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity,Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,14 +7,17 @@ function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State variable to track loading state
 
   const handleLogin = () => {
     console.log('Logging in with email:', email, 'and password:', password);
-  
+
     if (!email || !password) {
       Alert.alert('Validation Error', 'Please enter both email and password.');
       return;
     } else {
+      setIsLoading(true); // Set loading state to true
+
       fetch('http://10.0.2.2:3000/auth/login', {
         method: 'POST',
         headers: {
@@ -26,13 +29,12 @@ function LoginScreen({ navigation }) {
           if (response.ok) {
             return response.json(); // Parse the response JSON
           } else {
-            throw new Error('Login failed');
+            throw new Error('Invalid email or password. Please try again.');
           }
         })
         .then((data) => {
           if (data.success) {
             // Handle a successful login response
-            console.log('Login successful!');
             navigation.navigate('Main'); // Redirect to the Home screen
           } else {
             // Handle authentication error (data.success is false)
@@ -43,13 +45,14 @@ function LoginScreen({ navigation }) {
           if (error instanceof TypeError && error.message === 'Network request failed') {
             Alert.alert('Network Error', 'Please check your internet connection and try again.');
           } else {
-            console.error('Server Error:', error); // Log the detailed server error
-            Alert.alert('Server Error', 'An error occurred on the server. Please try again later.');
+            console.error(error); // Log the detailed server error
           }
+        })
+        .finally(() => {
+          setIsLoading(false); // Set loading state to false when the process is completed
         });
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -75,9 +78,13 @@ function LoginScreen({ navigation }) {
           <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="gray" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
+      {isLoading ? ( // Display loading indicator if isLoading is true
+        <ActivityIndicator size="large" color="#ED1703" />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+      )}
       <Text style={styles.signupText}>Not an existing user?</Text>
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.signupLink}>Register here</Text>
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   passwordInput: {
-    width: 300, // Reduced the width to accommodate the icon
+    width: 300,
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
