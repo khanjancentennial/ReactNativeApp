@@ -21,7 +21,7 @@ function ClinicalTests({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.pageHeading}>Clinical Tests</Text>
+        {/* <Text style={styles.pageHeading}>Clinical Tests</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
         {patients.map((patient, index) => (
@@ -45,7 +45,7 @@ function ClinicalTests({ navigation }) {
                   <Icon name="eye" size={17} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonFilled} onPress={() => { navigation.navigate('Add Clinical Test') }}>
-                  <Icon name="user-plus" size={17} color="white" />
+                  <Icon name="plus" size={17} color="white" />
                 </TouchableOpacity>
               </View>
             </View>

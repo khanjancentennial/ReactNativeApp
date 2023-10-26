@@ -35,7 +35,7 @@ function EditClinicalTestScreen({ navigation }) {
     <ScrollView style={styles.scrollView}>
      <SafeAreaView  style={styles.container}>
         
-      <Text style={styles.heading}></Text>
+      {/* <Text style={styles.heading}></Text> */}
       <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Name:</Text>
           <Text style={styles.detailInfo}>Khanjan Dave</Text>

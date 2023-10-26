@@ -12,7 +12,7 @@ function AllPatients({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.pageHeading}>Patients</Text>
+        {/* <Text style={styles.pageHeading}>Patients</Text> */}
         <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddPatients')}>
           <Icon name="user-plus" size={17} color="white" />
         </TouchableOpacity>

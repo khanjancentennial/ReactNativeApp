@@ -17,7 +17,7 @@ function MainPage({ navigation }) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.username}>Hi, username</Text>
+          <Text style={styles.username}>Hello</Text>
           <TouchableOpacity style={styles.dropdown} onPress={toggleDropdown}>
             <Icon name="user" size={24} color="black" />
             {isDropdownOpen && (

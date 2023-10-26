@@ -8,9 +8,9 @@ function ClinicalTestDetails({navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.pageHeading}>Clinical Test Details</Text>
-      </View>
+      </View> */}
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Patient's Name:</Text>

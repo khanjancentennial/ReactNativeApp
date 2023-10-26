@@ -12,7 +12,7 @@ function CriticalPatients({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.pageHeading}>Critical Patients</Text>
+        {/* <Text style={styles.pageHeading}>Critical Patients</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
         {patients.map((patient, index) => (

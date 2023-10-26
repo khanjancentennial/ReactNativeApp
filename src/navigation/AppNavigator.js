@@ -25,22 +25,24 @@ function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Main" component={MainPage} />
-        <Stack.Screen name="AllPatients" component={AllPatients} />
-        <Stack.Screen name="CriticalPatients" component={CriticalPatients} />
-        <Stack.Screen name="ClinicalTests" component={ClinicalTests} />
-        <Stack.Screen name="ClinicalTestDetails" component={ClinicalTestDetails} />
-        <Stack.Screen name="AddPatients" component={AddPatientScreen} />
-        <Stack.Screen name="Edit Patient Details" component={EditPatientDeatails} />
-        <Stack.Screen name="Patient Details" component={PatientsDetails} />
-        <Stack.Screen name="Add Clinical Test" component={AddClinicalTest} />
-        <Stack.Screen name="Edit Clinical Test" component={EditClinicalTest} />
-        <Stack.Screen name="Critrical Patient Details" component={ViewCritricalPatientDetails} />
-        <Stack.Screen name="User Profile" component={UserProfileScreen} />
-        <Stack.Screen name="Edit User Profile" component={EditUserProfileScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{headerTitle:'Login'}} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{headerTitle:'Welcome'}}/>
+        <Stack.Screen name="Register" component={RegisterScreen} options={{headerTitle:'Register Here'}}/>
+        <Stack.Screen name="Main" component={MainPage} options={{
+          headerLeft: null, headerTitle: 'Main Page'
+        }}/>
+        <Stack.Screen name="AllPatients" component={AllPatients} options={{headerTitle:'All Patients'}} />
+        <Stack.Screen name="CriticalPatients" component={CriticalPatients} options={{headerTitle:'Critical Patients'}}/>
+        <Stack.Screen name="ClinicalTests" component={ClinicalTests} options={{headerTitle:'Clinical Tests'}}/>
+        <Stack.Screen name="ClinicalTestDetails" component={ClinicalTestDetails} options={{headerTitle:'Clinical Test Data'}}/>
+        <Stack.Screen name="AddPatients" component={AddPatientScreen} options={{headerTitle:'Add Patients'}}/>
+        <Stack.Screen name="Edit Patient Details" component={EditPatientDeatails} options={{headerTitle:'Edit Details'}}/>
+        <Stack.Screen name="Patient Details" component={PatientsDetails} options={{headerTitle:'Patient Details'}}/>
+        <Stack.Screen name="Add Clinical Test" component={AddClinicalTest} options={{headerTitle:'Add Clinical Test'}} />
+        <Stack.Screen name="Edit Clinical Test" component={EditClinicalTest} options={{headerTitle:'Edit Test'}} />
+        <Stack.Screen name="Critrical Patient Details" component={ViewCritricalPatientDetails} options={{headerTitle:'Critical Patients'}} />
+        <Stack.Screen name="User Profile" component={UserProfileScreen} options={{headerTitle:'Profile'}}/>
+        <Stack.Screen name="Edit User Profile" component={EditUserProfileScreen} options={{headerTitle:'Edit Profile'}} />
 
 
       </Stack.Navigator>
