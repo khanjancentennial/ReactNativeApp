@@ -5,7 +5,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function CriticalPatients({ navigation }) {
   const [searchText, setSearchText] = useState(''); // State to store the search text
   const patients = [
+    { name: 'Patient 1', caseNumber: 'Case No: 12345' },
     { name: 'Patient 2', caseNumber: 'Case No: 23456' },
+    { name: 'Patient 3', caseNumber: 'Case No: 34567' },
   ];
 
   const handleSearch = () => {
