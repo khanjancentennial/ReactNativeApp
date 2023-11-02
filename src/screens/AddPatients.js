@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 function AddPatientScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -16,6 +16,26 @@ function AddPatientScreen({ navigation }) {
   const genders = ['Male', 'Female'];
 
   const handleRegister = () => {
+    if (!firstName || !lastName || !phoneNumber || !email || !height || !weight) {
+      Alert.alert('Validation Error', 'Please fill in all fields.');
+      return;
+    }
+
+    if (!/^\d+$/.test(phoneNumber) || phoneNumber.length !== 10) {
+      Alert.alert('Validation Error', 'Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (!/^\d+$/.test(height) || !/^\d+$/.test(weight)) {
+      Alert.alert('Validation Error', 'Height and weight should be numbers.');
+      return;
+    }
+
     // Create a patient object with the data
     const newPatientData = {
       firstName,
@@ -40,6 +60,11 @@ function AddPatientScreen({ navigation }) {
         console.error('Error adding patient:', error);
         // Handle the error, show an alert, or other error handling logic
       });
+  };
+
+  const isValidEmail = (email) => {
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    return emailPattern.test(email);
   };
 
   return (
