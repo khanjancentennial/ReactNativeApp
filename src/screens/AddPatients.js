@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity,ScrollView,SafeAreaView  } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
+import axios from 'axios'; // Import Axios
 
 function AddPatientScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -15,88 +16,93 @@ function AddPatientScreen({ navigation }) {
   const genders = ['Male', 'Female'];
 
   const handleRegister = () => {
-    // Add your registration logic here
-    console.log('Registering with the following information:');
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Phone Number:', phoneNumber);
-    console.log('Email:', email);
-    console.log('Height:', height);
-    console.log('Weight:', weight);
-    console.log('Gender:', gender);
-    console.log('Address:', address);
-    navigation.navigate('AllPatients');
+    // Create a patient object with the data
+    const newPatientData = {
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      height,
+      weight,
+      address,
+      gender,
+    };
+
+    // Send a POST request to your server with the patient data
+    axios
+      .post('http://10.0.2.2:3000/patient/add', newPatientData)
+      .then((response) => {
+        console.log('Patient added successfully:', response.data);
+        alert('Patient added successfully');
+        navigation.navigate('AllPatients');
+      })
+      .catch((error) => {
+        console.error('Error adding patient:', error);
+        // Handle the error, show an alert, or other error handling logic
+      });
   };
 
   return (
-   
     <ScrollView style={styles.scrollView}>
-     <SafeAreaView  style={styles.container}>
-        
-      <Text style={styles.heading}></Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient First Name"
-        value={firstName}
-        onChangeText={(text) => setFirstName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Last Name"
-        value={lastName}
-        onChangeText={(text) => setLastName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Phone Number"
-        value={phoneNumber}
-        onChangeText={(text) => setPhoneNumber(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Email Address"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Height in CM"
-        value={height}
-        onChangeText={(text) => setHeight(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Weight in KG"
-        value={weight}
-        onChangeText={(text) => setWeight(text)}
-      />
-
-      <TextInput
-        style={styles.inputForMultilines}
-        placeholder="Enter Patient Home Address"
-        value={address}
-        multiline={true}
-        numberOfLines={4}
-        onChangeText={(text) => setAddress(text)}
-      />
-
-
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Select Gender</Text>
-        <RadioButtonGroup
-          options={genders}
-          selectedOption={gender}
-          onOptionSelect={setGender}
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.heading}></Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient First Name"
+          value={firstName}
+          onChangeText={(text) => setFirstName(text)}
         />
-      </View>
-      
-      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-        <Text style={styles.loginButtonText}>Add Details</Text>
-      </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Last Name"
+          value={lastName}
+          onChangeText={(text) => setLastName(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Phone Number"
+          value={phoneNumber}
+          onChangeText={(text) => setPhoneNumber(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Email Address"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Height in CM"
+          value={height}
+          onChangeText={(text) => setHeight(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Weight in KG"
+          value={weight}
+          onChangeText={(text) => setWeight(text)}
+        />
+        <TextInput
+          style={styles.inputForMultilines}
+          placeholder="Enter Patient Home Address"
+          value={address}
+          multiline={true}
+          numberOfLines={4}
+          onChangeText={(text) => setAddress(text)}
+        />
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Select Gender</Text>
+          <RadioButtonGroup
+            options={genders}
+            selectedOption={gender}
+            onOptionSelect={setGender}
+          />
+        </View>
+        <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+          <Text style={styles.loginButtonText}>Add Details</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </ScrollView>
-   
   );
 }
 
@@ -121,9 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 10,
     borderRadius: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
-
   inputForMultilines: {
     width: 300,
     height: 100,
@@ -132,20 +137,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 10,
     borderRadius: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
-
   labelContainer: {
-    width : 300,
-    flexDirection: 'Column',
-    alignItems: 'left', // Center the labels
+    width: 300,
+    flexDirection: 'column',
+    alignItems: 'left',
     marginBottom: 10,
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
   },
- 
   loginButton: {
     backgroundColor: '#ED1703',
     padding: 10,
@@ -156,7 +159,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-
   scrollView: {
     backgroundColor: '#EFE1E1',
   },
