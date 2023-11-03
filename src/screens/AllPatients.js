@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
 
 function AllPatients({ navigation }) {
-  const [searchText, setSearchText] = useState(''); // State to store the search text
-  const patients = [
-    { name: 'Patient 1', caseNumber: 'Case No: 12345' },
-    { name: 'Patient 2', caseNumber: 'Case No: 23456' },
-    { name: 'Patient 3', caseNumber: 'Case No: 34567' },
-  ];
+  const [searchText, setSearchText] = useState('');
+  const [patients, setPatients] = useState([]); // State to store the list of patients
+
+  useEffect(() => {
+    // Fetch patients from your server when the component mounts
+    axios
+      .get('http://10.0.2.2:3000/patient/list')
+      .then((response) => {
+        // Log the response to inspect its structure
+        console.log('Response data:', response.data);
+  
+        // Check if response data has the "data" key and it's an array
+        if (Array.isArray(response.data.data)) {
+          setPatients(response.data.data); // Access the "data" key
+        } else {
+          console.error('Invalid data format - expected an array of patients');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching patients:', error);
+      });
+  }, []);
 
   const handleSearch = () => {
     // Implement your search logic here
@@ -37,8 +54,9 @@ function AllPatients({ navigation }) {
         {patients.map((patient, index) => (
           <View style={styles.card} key={index}>
             <View style={styles.cardLeft}>
-              <Text style={styles.cardName}>{patient.name}</Text>
-              <Text style={styles.cardInfo}>{patient.caseNumber}</Text>
+              <Text style={styles.cardName}>{patient.firstName}</Text>
+              <Text style={styles.cardInfo}>Case Number: {patient._id}</Text>
+              {/* Display other patient details as needed */}
             </View>
             <View style={styles.cardRight}>
               <View style={styles.buttonGroup}>
