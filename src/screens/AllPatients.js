@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 
 function AllPatients({ navigation }) {
   const [searchText, setSearchText] = useState('');
-  const [patients, setPatients] = useState([]); // State to store the list of patients
+  const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    // Fetch patients from your server when the component mounts
     axios
       .get('http://10.0.2.2:3000/patient/list')
       .then((response) => {
-        // Log the response to inspect its structure
-        console.log('Response data:', response.data);
-  
-        // Check if response data has the "data" key and it's an array
         if (Array.isArray(response.data.data)) {
-          setPatients(response.data.data); // Access the "data" key
+          setPatients(response.data.data);
         } else {
           console.error('Invalid data format - expected an array of patients');
         }
@@ -30,6 +25,46 @@ function AllPatients({ navigation }) {
   const handleSearch = () => {
     // Implement your search logic here
     // You can use the 'searchText' state to filter the list of patients
+  };
+
+  const handleDelete = (patientId) => {
+    // Show a confirmation dialog before deleting
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this patient?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            // Send a DELETE request to your server to delete the patient
+            axios
+              .delete(`http://10.0.2.2:3000/patient/delete/${patientId}`)
+              .then((response) => {
+                // Handle the success, you may also want to remove the deleted patient from the state
+                console.log('Patient deleted successfully:', response.data);
+                // Reload the patients list after deletion (you can update this part)
+                axios.get('http://10.0.2.2:3000/patient/list')
+                  .then((response) => {
+                    if (Array.isArray(response.data.data)) {
+                      setPatients(response.data.data);
+                    }
+                  })
+                  .catch((error) => {
+                    console.error('Error fetching patients:', error);
+                  });
+              })
+              .catch((error) => {
+                console.error('Error deleting patient:', error);
+              });
+          },
+          style: 'destructive',
+        },
+      ]
+    );
   };
 
   return (
@@ -60,14 +95,14 @@ function AllPatients({ navigation }) {
             </View>
             <View style={styles.cardRight}>
               <View style={styles.buttonGroup}>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
+                <TouchableOpacity style={styles.buttonFilled} onPress={() => handleDelete(patient._id)}>
                   <Icon name="trash" size={20} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { navigation.navigate('Edit Patient Details') }}>
+                <TouchableOpacity style={styles.buttonFilled} onPress={() => navigation.navigate('Edit Patient Details')}>
                   <Icon name="pencil" size={20} color="white" />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => { navigation.navigate('Patient Details') }}>
+              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => navigation.navigate('Patient Details')}>
                 <Text style={styles.viewDetailsButtonText}>View Details</Text>
               </TouchableOpacity>
             </View>
