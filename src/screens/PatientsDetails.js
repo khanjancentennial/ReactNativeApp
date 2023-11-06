@@ -2,94 +2,83 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function PatientsDetailsScreen({ navigation }) {
-  // Get the details passed from the previous page
+function PatientsDetailsScreen({ navigation, route }) {
+  // Get the patient's information from the route parameter
+  const { patient } = route.params;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.nameLabel}>Khanjan Dave</Text>
+      <Text style={styles.nameLabel}>{patient.firstName}</Text>
       
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Case Number:</Text>
-          <Text style={styles.detailInfo}>123456</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Height:</Text>
-          <Text style={styles.detailInfo}>170 CM</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Weight:</Text>
-          <Text style={styles.detailInfo}>80 KG</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Gender:</Text>
-          <Text style={styles.detailInfo}>Male</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Phone Number:</Text>
-          <Text style={styles.detailInfo}>+1 (111) 111 1111</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>email Id:</Text>
-          <Text style={styles.detailInfo}>abc@gmail.com</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Address:</Text>
-          <Text style={styles.detailInfo}>56 Storey Place scarborough Ontario Markham L3S 3R5 </Text>
-        </View>
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() =>  navigation.navigate('Edit Patient Details') }>
-            <Icon name="edit" size={20} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
-            <Icon name="trash" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Case Number:</Text>
+        <Text style={styles.detailInfo}>{patient._id}</Text>
       </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Height:</Text>
+        <Text style={styles.detailInfo}>{patient.height}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Weight:</Text>
+        <Text style={styles.detailInfo}>{patient.weight}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Gender:</Text>
+        <Text style={styles.detailInfo}>{patient.gender}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Phone Number:</Text>
+        <Text style={styles.detailInfo}>{patient.phoneNumber}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>email Id:</Text>
+        <Text style={styles.detailInfo}>{patient.email}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Address:</Text>
+        <Text style={styles.detailInfo}>{patient.address}</Text>
+      </View>
+      
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity
+          style={styles.buttonFilled}
+          onPress={() => navigation.navigate('Edit Patient Details', { patient })}
+        >
+          <Icon name="edit" size={20} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonFilled}
+          onPress={() => { /* Handle delete user action */ }}
+        >
+          <Icon name="trash" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'Top',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
-    paddingTop : 20  
-}, 
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: 10,
-    marginTop: 20,
-  },
-  pageHeading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ED1703',
-  },
-  detailsContainer: {
-    flex: 1,
-    paddingTop: 20,
-    alignItems: 'center',
+    paddingTop: 20  
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 5,
-    marginTop : 20
+    marginTop: 20
   },
   detailLabel: {
     fontSize: 16,
     fontWeight: 'bold',
     width: '40%',
   },
-
   nameLabel: {
     fontSize: 24,
-    fontWeight: 'bold',
-    
+    fontWeight: 'bold',  
   },
   detailInfo: {
     fontSize: 16,

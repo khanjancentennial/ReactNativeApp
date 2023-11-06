@@ -126,7 +126,7 @@ const filterPatients = () => {
                   <Icon name="pencil" size={20} color="white" />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => navigation.navigate('Patient Details')}>
+              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => navigation.navigate('Patient Details', { patient })}>
                 <Text style={styles.viewDetailsButtonText}>View Details</Text>
               </TouchableOpacity>
             </View>
