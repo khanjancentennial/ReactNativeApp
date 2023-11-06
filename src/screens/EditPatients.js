@@ -1,109 +1,128 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity,ScrollView,SafeAreaView  } from 'react-native';
-import RadioButtonGroup from './../components/RadioButtonGroup';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import axios from 'axios';
 
-function EditPatientDeatails({ navigation }) {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [address, setAddress] = useState('');
-  const [gender, setGender] = useState(''); // Will store 'Male' or 'Female'
+function EditPatientDetails({ route, navigation }) {
+  const { patientId } = route.params;
+  const [patient, setPatient] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    email: '',
+    height: '',
+    weight: '',
+    address: '',
+    gender: '', // Will store 'Male' or 'Female'
+  });
 
-  const genders = ['Male', 'Female'];
+  useEffect(() => {
+    axios
+      .get(`http://10.0.2.2:3000/patient/view/${patientId}`)
+      .then((response) => {
+        const patientData = response.data.data;
+        setPatient({
+          firstName: patientData.firstName,
+          lastName: patientData.lastName,
+          phoneNumber: patientData.phoneNumber,
+          email: patientData.email,
+          height: patientData.height,
+          weight: patientData.weight,
+          address: patientData.address,
+          gender: patientData.gender, // Assuming gender is provided in the response
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching patient data:', error);
+      });
+  }, [patientId]);
+  
 
-  const handleRegister = () => {
-    // Add your registration logic here
-    console.log('Registering with the following information:');
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Phone Number:', phoneNumber);
-    console.log('Email:', email);
-    console.log('Height:', height);
-    console.log('Weight:', weight);
-    console.log('Gender:', gender);
-    console.log('Address:', address);
-    navigation.navigate('AllPatients');
+  const handleUpdate = () => {
+    // Send a PUT request to update the patient details
+    axios
+      .put(`http://10.0.2.2:3000/patient/update/${patientId}`, patient)
+      .then((response) => {
+        console.log('Patient details updated successfully:', response.data);
+        // Optionally, navigate back to the patient list screen or another screen
+        navigation.navigate('AllPatients');
+      })
+      .catch((error) => {
+        console.error('Error updating patient details:', error);
+      });
+  };
+
+  const handleChange = (field, value) => {
+    // Update the patient state when any field changes
+    setPatient({ ...patient, [field]: value });
   };
 
   return (
-   
     <ScrollView style={styles.scrollView}>
-     <SafeAreaView  style={styles.container}>
-        
-      <Text style={styles.heading}></Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient First Name"
-        value={firstName}
-        onChangeText={(text) => setFirstName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Last Name"
-        value={lastName}
-        onChangeText={(text) => setLastName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Phone Number"
-        value={phoneNumber}
-        onChangeText={(text) => setPhoneNumber(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Email Address"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Height in CM"
-        value={height}
-        onChangeText={(text) => setHeight(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Patient Weight in KG"
-        value={weight}
-        onChangeText={(text) => setWeight(text)}
-      />
-
-      <TextInput
-        style={styles.inputForMultilines}
-        placeholder="Enter Patient Home Address"
-        value={address}
-        multiline={true}
-        numberOfLines={4}
-        onChangeText={(text) => setAddress(text)}
-      />
-
-
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Select Gender</Text>
-        <RadioButtonGroup
-          options={genders}
-          selectedOption={gender}
-          onOptionSelect={setGender}
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.heading}></Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient First Name"
+          value={patient.firstName}
+          onChangeText={(text) => handleChange('firstName', text)}
         />
-      </View>
-      
-      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-        <Text style={styles.loginButtonText}>Update</Text>
-      </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Last Name"
+          value={patient.lastName}
+          onChangeText={(text) => handleChange('lastName', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Phone Number"
+          value={patient.phoneNumber}
+          onChangeText={(text) => handleChange('phoneNumber', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Email Address"
+          value={patient.email}
+          onChangeText={(text) => handleChange('email', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Height in CM"
+          value={patient.height}
+          onChangeText={(text) => handleChange('height', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Weight in KG"
+          value={patient.weight}
+          onChangeText={(text) => handleChange('weight', text)}
+        />
+        <TextInput
+          style={styles.inputForMultilines}
+          placeholder="Enter Patient Home Address"
+          value={patient.address}
+          multiline={true}
+          numberOfLines={4}
+          onChangeText={(text) => handleChange('address', text)}
+        />
+        <Text style={styles.label}>Select Gender</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Patient Gender (Male/Female)"
+          value={patient.gender}
+          onChangeText={(text) => handleChange('gender', text)}
+        />
+        <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
+          <Text style={styles.loginButtonText}>Update</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </ScrollView>
-   
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'top',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
   },
@@ -121,9 +140,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 10,
     borderRadius: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
-
   inputForMultilines: {
     width: 300,
     height: 100,
@@ -132,20 +150,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 10,
     borderRadius: 10,
-    backgroundColor: 'white'
-  },
-
-  labelContainer: {
-    width : 300,
-    flexDirection: 'Column',
-    alignItems: 'left', // Center the labels
-    marginBottom: 10,
+    backgroundColor: 'white',
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
   },
- 
   loginButton: {
     backgroundColor: '#ED1703',
     padding: 10,
@@ -156,10 +166,9 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-
   scrollView: {
     backgroundColor: '#EFE1E1',
   },
 });
 
-export default EditPatientDeatails;
+export default EditPatientDetails;

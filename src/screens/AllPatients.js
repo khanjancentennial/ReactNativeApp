@@ -27,6 +27,11 @@ function AllPatients({ navigation }) {
     // You can use the 'searchText' state to filter the list of patients
   };
 
+  const handleEdit = (patientId) => {
+    // Navigate to the "EditPatient" screen and pass the patientId as a parameter
+    navigation.navigate('EditPatientDetails', { patientId });
+  };
+  
   const handleDelete = (patientId) => {
     // Show a confirmation dialog before deleting
     Alert.alert(
@@ -98,7 +103,7 @@ function AllPatients({ navigation }) {
                 <TouchableOpacity style={styles.buttonFilled} onPress={() => handleDelete(patient._id)}>
                   <Icon name="trash" size={20} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => navigation.navigate('Edit Patient Details')}>
+                <TouchableOpacity style={styles.buttonFilled} onPress={() => handleEdit(patient._id)}>
                   <Icon name="pencil" size={20} color="white" />
                 </TouchableOpacity>
               </View>
