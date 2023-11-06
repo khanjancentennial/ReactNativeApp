@@ -25,14 +25,14 @@ function AllPatients({ navigation }) {
   }, []);
 
   // Function to filter patients based on search input
-  const filterPatients = () => {
-    const filteredPatients = patients.filter((patient) => {
-      // Check if patient's name or email contains the search text
-      const patientInfo = patient.firstName + ' ' + patient.email;
-      return patientInfo.toLowerCase().includes(searchText.toLowerCase());
-    });
-    setSearchResults(filteredPatients);
-  };
+const filterPatients = () => {
+  const filteredPatients = patients.filter((patient) => {
+    // Check if patient's name or email contains the search text
+    const patientInfo = patient.firstName.toLowerCase() + ' ' + patient.email.toLowerCase();
+    return patientInfo.includes(searchText.toLowerCase());
+  });
+  setSearchResults(filteredPatients);
+};
 
   const handleSearch = () => {
     filterPatients();
