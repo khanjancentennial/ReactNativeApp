@@ -6,6 +6,8 @@ import axios from 'axios';
 function AllPatients({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [patients, setPatients] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [patientsFound, setPatientsFound] = useState(true); // State to track whether patients are found
 
   useEffect(() => {
     axios
@@ -22,9 +24,23 @@ function AllPatients({ navigation }) {
       });
   }, []);
 
+  // Function to filter patients based on search input
+  const filterPatients = () => {
+    const filteredPatients = patients.filter((patient) => {
+      // Check if patient's name or email contains the search text
+      const patientInfo = patient.firstName + ' ' + patient.email;
+      return patientInfo.toLowerCase().includes(searchText.toLowerCase());
+    });
+    setSearchResults(filteredPatients);
+  };
+
   const handleSearch = () => {
-    // Implement your search logic here
-    // You can use the 'searchText' state to filter the list of patients
+    filterPatients();
+  };
+
+  const clearSearch = () => {
+    setSearchText('');
+    setSearchResults([]); // Clear the search results
   };
 
   const handleEdit = (patientId) => {
@@ -85,13 +101,16 @@ function AllPatients({ navigation }) {
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
             <Icon name="search" size={20} color="gray" />
           </TouchableOpacity>
+          <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
+            <Icon name="times" size={20} color="gray" />
+          </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddPatients')}>
           <Icon name="user-plus" size={17} color="white" />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
-        {patients.map((patient, index) => (
+        {(searchResults.length > 0 ? searchResults : patients).map((patient, index) => (
           <View style={styles.card} key={index}>
             <View style={styles.cardLeft}>
               <Text style={styles.cardName}>{patient.firstName}</Text>
@@ -114,6 +133,7 @@ function AllPatients({ navigation }) {
           </View>
         ))}
       </ScrollView>
+      {!searchResults.length && !patientsFound && <Text>No users found</Text>}
     </View>
   );
 }
