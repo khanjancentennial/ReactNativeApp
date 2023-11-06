@@ -42,7 +42,7 @@ function PatientsDetailsScreen({ navigation, route }) {
       <View style={styles.buttonGroup}>
         <TouchableOpacity
           style={styles.buttonFilled}
-          onPress={() => navigation.navigate('Edit Patient Details', { patient })}
+          onPress={() => navigation.navigate('EditPatientDetails', { patient })}
         >
           <Icon name="edit" size={20} color="white" />
         </TouchableOpacity>
