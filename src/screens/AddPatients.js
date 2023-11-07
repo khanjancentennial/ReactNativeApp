@@ -16,7 +16,7 @@ function AddPatientScreen({ navigation }) {
   const genders = ['Male', 'Female'];
 
   const handleRegister = () => {
-    if (!firstName || !lastName || !phoneNumber || !email || !height || !weight) {
+    if (!firstName || !lastName || !phoneNumber || !email || !height || !weight || gender === undefined || !address) {
       Alert.alert('Validation Error', 'Please fill in all fields.');
       return;
     }
@@ -36,6 +36,8 @@ function AddPatientScreen({ navigation }) {
       return;
     }
 
+    const genderValue = gender === 'Male' ? 0 : 1;
+
     // Create a patient object with the data
     const newPatientData = {
       firstName,
@@ -45,7 +47,7 @@ function AddPatientScreen({ navigation }) {
       height,
       weight,
       address,
-      gender,
+      gender: genderValue,
     };
 
     // Send a POST request to your server with the patient data
