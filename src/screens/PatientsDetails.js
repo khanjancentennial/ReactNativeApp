@@ -6,14 +6,19 @@ function PatientsDetailsScreen({ navigation, route }) {
   // Get the patient's information from the route parameter
   const { patient } = route.params;
 
+  // Define a function to display gender as 'Male' or 'Female'
+  const getGenderText = (gender) => {
+    return gender === 0 ? 'Male' : gender === 1 ? 'Female' : 'Unknown';
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.nameLabel}>{patient.firstName}</Text>
-      
-      <View style={styles.detailRow}>
+      <Text style={styles.nameLabel}>{patient.firstName} {patient.lastName}</Text>
+
+      {/* <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Case Number:</Text>
         <Text style={styles.detailInfo}>{patient._id}</Text>
-      </View>
+      </View> */}
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Height:</Text>
         <Text style={styles.detailInfo}>{patient.height}</Text>
@@ -24,7 +29,7 @@ function PatientsDetailsScreen({ navigation, route }) {
       </View>
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Gender:</Text>
-        <Text style={styles.detailInfo}>{patient.gender}</Text>
+        <Text style={styles.detailInfo}>{getGenderText(patient.gender)}</Text>
       </View>
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Phone Number:</Text>
@@ -38,7 +43,7 @@ function PatientsDetailsScreen({ navigation, route }) {
         <Text style={styles.detailLabel}>Address:</Text>
         <Text style={styles.detailInfo}>{patient.address}</Text>
       </View>
-      
+
       <View style={styles.buttonGroup}>
         <TouchableOpacity
           style={styles.buttonFilled}
@@ -63,13 +68,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
-    paddingTop: 20  
+    paddingTop: 20
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 5,
-    marginTop: 20
+    marginTop: 20,
   },
   detailLabel: {
     fontSize: 16,
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
   },
   nameLabel: {
     fontSize: 24,
-    fontWeight: 'bold',  
+    fontWeight: 'bold',
   },
   detailInfo: {
     fontSize: 16,

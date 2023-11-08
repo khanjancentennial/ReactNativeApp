@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import RadioButtonGroup from './../components/RadioButtonGroup'; // Import the RadioButtonGroup component
 
 function EditPatientDetails({ route, navigation }) {
   const { patientId } = route.params;
@@ -12,7 +13,7 @@ function EditPatientDetails({ route, navigation }) {
     height: '',
     weight: '',
     address: '',
-    gender: '', // Will store 'Male' or 'Female'
+    gender: 0, // '0' for Male, '1' for Female (as strings)
   });
 
   useEffect(() => {
@@ -20,6 +21,10 @@ function EditPatientDetails({ route, navigation }) {
       .get(`http://10.0.2.2:3000/patient/view/${patientId}`)
       .then((response) => {
         const patientData = response.data.data;
+        console.log('Received gender value:', patientData.gender);
+        // Map the gender value to 'Male' or 'Female'
+        const genderValue = patientData.gender === 1 ? 'Female' : 'Male';
+        console.log('Setting gender value:', genderValue);
         setPatient({
           firstName: patientData.firstName,
           lastName: patientData.lastName,
@@ -28,19 +33,22 @@ function EditPatientDetails({ route, navigation }) {
           height: patientData.height,
           weight: patientData.weight,
           address: patientData.address,
-          gender: patientData.gender, // Assuming gender is provided in the response
+          gender: genderValue,
         });
       })
       .catch((error) => {
         console.error('Error fetching patient data:', error);
       });
   }, [patientId]);
-  
 
   const handleUpdate = () => {
     // Send a PUT request to update the patient details
+    // Map the gender value back to '0' or '1'
+    const genderValue = patient.gender === 'Female' ? 1 : 0;
+    const updatedPatient = { ...patient, gender: genderValue };
+
     axios
-      .put(`http://10.0.2.2:3000/patient/update/${patientId}`, patient)
+      .put(`http://10.0.2.2:3000/patient/update/${patientId}`, updatedPatient)
       .then((response) => {
         console.log('Patient details updated successfully:', response.data);
         // Optionally, navigate back to the patient list screen or another screen
@@ -52,7 +60,7 @@ function EditPatientDetails({ route, navigation }) {
   };
 
   const handleChange = (field, value) => {
-    // Update the patient state when any field changes
+    // Update the patient state with the selected option (either 'Male' or 'Female')
     setPatient({ ...patient, [field]: value });
   };
 
@@ -105,12 +113,13 @@ function EditPatientDetails({ route, navigation }) {
           onChangeText={(text) => handleChange('address', text)}
         />
         <Text style={styles.label}>Select Gender</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Patient Gender (Male/Female)"
-          value={patient.gender}
-          onChangeText={(text) => handleChange('gender', text)}
-        />
+        <View style={styles.labelContainer}>
+          <RadioButtonGroup
+            options={['Male', 'Female']} // Options for the gender
+            selectedOption={patient.gender} // Selected gender
+            onOptionSelect={(value) => handleChange('gender', value)} // Update gender
+          />
+        </View>
         <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
           <Text style={styles.loginButtonText}>Update</Text>
         </TouchableOpacity>
