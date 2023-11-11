@@ -11,7 +11,7 @@ function AllPatients({ navigation }) {
 
   useEffect(() => {
     axios
-      .get('http://10.0.2.2:3000/patient/list')
+      .get('https://group3-mapd713.onrender.com/patient/list')
       .then((response) => {
         if (Array.isArray(response.data.data)) {
           setPatients(response.data.data);
@@ -63,12 +63,12 @@ function AllPatients({ navigation }) {
           onPress: () => {
             // Send a DELETE request to your server to delete the patient
             axios
-              .delete(`http://10.0.2.2:3000/patient/delete/${patientId}`)
+              .delete(`https://group3-mapd713.onrender.com/patient/delete/${patientId}`)
               .then((response) => {
                 // Handle the success, you may also want to remove the deleted patient from the state
                 console.log('Patient deleted successfully:', response.data);
                 // Reload the patients list after deletion (you can update this part)
-                axios.get('http://10.0.2.2:3000/patient/list')
+                axios.get('https://group3-mapd713.onrender.com/patient/list')
                   .then((response) => {
                     if (Array.isArray(response.data.data)) {
                       setPatients(response.data.data);

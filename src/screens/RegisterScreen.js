@@ -46,7 +46,7 @@ function RegisterScreen({ navigation }) {
 
     setIsLoading(true); // Set loading state to true
 
-    fetch('http://10.0.2.2:3000/auth/register', {
+    fetch('https://group3-mapd713.onrender.com/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

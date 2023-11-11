@@ -18,7 +18,7 @@ function EditPatientDetails({ route, navigation }) {
 
   useEffect(() => {
     axios
-      .get(`http://10.0.2.2:3000/patient/view/${patientId}`)
+      .get(`https://group3-mapd713.onrender.com/patient/view/${patientId}`)
       .then((response) => {
         const patientData = response.data.data;
         console.log('Received gender value:', patientData.gender);
@@ -48,7 +48,7 @@ function EditPatientDetails({ route, navigation }) {
     const updatedPatient = { ...patient, gender: genderValue };
 
     axios
-      .put(`http://10.0.2.2:3000/patient/update/${patientId}`, updatedPatient)
+      .put(`https://group3-mapd713.onrender.com/patient/update/${patientId}`, updatedPatient)
       .then((response) => {
         console.log('Patient details updated successfully:', response.data);
         // Optionally, navigate back to the patient list screen or another screen

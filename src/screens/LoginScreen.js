@@ -18,7 +18,7 @@ function LoginScreen({ navigation }) {
     } else {
       setIsLoading(true); // Set loading state to true
 
-      fetch('http://10.0.2.2:3000/auth/login', {
+      fetch('https://group3-mapd713.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
