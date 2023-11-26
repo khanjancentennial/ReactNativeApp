@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import RadioButtonGroup from './../components/RadioButtonGroup'; // Import the RadioButtonGroup component
 
@@ -46,18 +46,32 @@ function EditPatientDetails({ route, navigation }) {
     // Map the gender value back to '0' or '1'
     const genderValue = patient.gender === 'Female' ? 1 : 0;
     const updatedPatient = { ...patient, gender: genderValue };
-
+  
     axios
-      .put(`https://group3-mapd713.onrender.com/patient/update/${patientId}`, updatedPatient)
+      .put(`https://group3-mapd713.onrender.com/patient/patients/${patientId}`, updatedPatient)
       .then((response) => {
         console.log('Patient details updated successfully:', response.data);
-        // Optionally, navigate back to the patient list screen or another screen
-        navigation.navigate('AllPatients');
+        
+        // Display success message
+        Alert.alert('Success', 'Patient details updated successfully', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('AllPatients'),
+          },
+        ]);
       })
       .catch((error) => {
         console.error('Error updating patient details:', error);
+        
+        // Display error message
+        Alert.alert('Error', 'Failed to update patient details. Please try again.', [
+          {
+            text: 'OK',
+          },
+        ]);
       });
   };
+  
 
   const handleChange = (field, value) => {
     // Update the patient state with the selected option (either 'Male' or 'Female')

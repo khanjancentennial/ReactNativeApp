@@ -17,6 +17,7 @@ import EditClinicalTest from '../screens/EditClinicalTest';
 import ViewCritricalPatientDetails from '../screens/ViewCriticalPatientDetails';
 import UserProfileScreen from '../screens/UserProfile';
 import EditUserProfileScreen from '../screens/EditProfile';
+import AddClinicalTestScreen from '../screens/AddClinicalTest';
 
 
 function AppNavigator() {
@@ -36,7 +37,7 @@ function AppNavigator() {
         <Stack.Screen name="AddPatients" component={AddPatientScreen} options={{headerTitle:'Add Patients'}}/>
         <Stack.Screen name="EditPatientDetails" component={EditPatientDetails} options={{headerTitle:'Edit Details'}}/>
         <Stack.Screen name="Patient Details" component={PatientsDetails} options={{headerTitle:'Patient Details'}}/>
-        <Stack.Screen name="Add Clinical Test" component={AddClinicalTest} options={{headerTitle:'Add Clinical Test'}} />
+        <Stack.Screen name="AddClinicalTest" component={AddClinicalTestScreen} options={{headerTitle:'Add Clinical Test'}} />
         <Stack.Screen name="Edit Clinical Test" component={EditClinicalTest} options={{headerTitle:'Edit Test'}} />
         <Stack.Screen name="Critrical Patient Details" component={ViewCritricalPatientDetails} options={{headerTitle:'Critical Patients'}} />
         <Stack.Screen name="User Profile" component={UserProfileScreen} options={{headerTitle:'Profile'}}/>

@@ -48,6 +48,11 @@ function AllPatients({ navigation }) {
     navigation.navigate('EditPatientDetails', { patientId });
   };
 
+  const handleTestButton = (patientId) => {
+    // Navigate to the "AddClinicalTest" screen and pass the patientId as a parameter
+    navigation.navigate('AddClinicalTest', { patientId });
+  };
+
   const handleDelete = (patientId) => {
     // Show a confirmation dialog before deleting
     Alert.alert(
@@ -142,6 +147,10 @@ function AllPatients({ navigation }) {
               <TouchableOpacity style={styles.buttonFilled} onPress={() => navigation.navigate('Patient Details', { patient })}>
   <Icon name="info-circle" size={20} color="white" /> 
 </TouchableOpacity>
+
+<TouchableOpacity style={styles.buttonFilled} onPress={() => handleTestButton(patient._id)}>
+                <Icon name="flask" size={20} color="white" /> 
+              </TouchableOpacity>
 
             </View>
           </View>

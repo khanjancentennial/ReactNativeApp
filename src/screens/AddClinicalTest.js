@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity,ScrollView,SafeAreaView  } from 'react-native';
+import React, { useState, useEffect} from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
 
-function AddClinicalTestScreen({ navigation }) {
+function AddClinicalTestScreen({ navigation, route }) {
   const [bloodPressure, setBloodPressure] = useState('');
   const [respiratoryRate, setRespiratoryRate] = useState('');
   const [bloodOxygenLevel, setBloodOxygenLevel] = useState('');
@@ -11,24 +11,92 @@ function AddClinicalTestScreen({ navigation }) {
   const [pastMedicalHistory, setPastMedicalHistory] = useState('');
   const [medicalDiagnosis, setMedicalDiagnosis] = useState('');
   const [medicalPrescription, setMedicalPrescription] = useState('');
+  const [patientName, setPatientName] = useState('');
 
+  // Use effect to set initial values when the component mounts
+  useEffect(() => {
+    // Get patientId from navigation parameters
+    const patientId = route.params?.patientId;
   
+    // Assuming you have a function to fetch patient details by ID
+    // Replace this with your actual API call or data fetching logic
+    const fetchPatientDetails = async (id) => {
+      try {
+        // Example API call to get patient details
+        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests`);
+        const data = await response.json();
+  
+        // Filter clinical tests for the specific patient ID
+        const patientTests = data.data.filter((test) => test.patient?._id === patientId);
+  
+        if (patientTests.length > 0) {
+          // Set the patient details to state
+          setPatientName(`${patientTests[0].patient.firstName} ${patientTests[0].patient.lastName}`);
+        }
+      } catch (error) {
+        console.error('Error fetching patient details:', error);
+      }
+    };
+  
+    // Fetch patient details when patientId changes
+    if (patientId) {
+      fetchPatientDetails(patientId);
+    }
+  }, [route.params?.patientId]);
 
-  const handleRegister = () => {
-    // Add your registration logic here
-    console.log('Registering with the following information:');
-    console.log('bloodPressure:', bloodPressure);
-    console.log('respiratoryRate:', respiratoryRate);
-    console.log('bloodOxygenLevel:', bloodOxygenLevel);
-    console.log('heartbeatRate:', heartbeatRate);
-    console.log('chiefcomplaint:', chiefcomplaint);
-    console.log('pastMedicalHistory:', pastMedicalHistory);
-    console.log('medicalDiagnosis:', medicalDiagnosis);
-    console.log('medicalPrescription:', medicalPrescription);
-
-    navigation.navigate('ClinicalTests');
-
+  const handleRegister = async () => {
+    try {
+      // Create a new clinical test object based on the provided JSON structure
+      const newClinicalTest = {
+        bloodPressure: parseInt(bloodPressure),
+        respiratoryRate: parseInt(respiratoryRate),
+        bloodOxygenLevel: parseInt(bloodOxygenLevel),
+        heartbeatRate: parseInt(heartbeatRate),
+        chiefComplaint: chiefcomplaint,
+        pastMedicalHistory: pastMedicalHistory,
+        medicalDiagnosis: medicalDiagnosis,
+        medicalPrescription: medicalPrescription,
+        creationDateTime: new Date().toISOString(),
+        patientId: route.params?.patientId,
+      };
+  
+      // Make a POST request to add the new clinical test
+      const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newClinicalTest),
+      });
+  
+      // Check if the request was successful
+      if (response.ok) {
+        console.log('Clinical test added successfully!');
+        Alert.alert('Success', 'Clinical test added successfully!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('ClinicalTests'),
+          },
+        ]);
+      } else {
+        console.error('Failed to add clinical test:', response.statusText);
+        Alert.alert('Error', 'Failed to add clinical test. Please try again.', [
+          {
+            text: 'OK',
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error('Error adding clinical test:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.', [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
   };
+  
+  
 
   return (
    
@@ -38,11 +106,7 @@ function AddClinicalTestScreen({ navigation }) {
       {/* <Text style={styles.heading}></Text> */}
       <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Name:</Text>
-          <Text style={styles.detailInfo}>Khanjan Dave</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Case Number:</Text>
-          <Text style={styles.detailInfo}>123456</Text>
+          <Text style={styles.detailInfo}>{patientName}</Text>
         </View>
       <TextInput
         style={styles.input}
