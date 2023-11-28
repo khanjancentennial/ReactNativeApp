@@ -1,27 +1,84 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 function ClinicalTests({ navigation }) {
-  const [searchText, setSearchText] = useState(''); // State to store the search text
-  const patients = [
-    { name: 'Patient 1', caseNumber: 'Case No: 12345', testDate: 'Last Test: 12/12/2020' },
-    { name: 'Patient 2', caseNumber: 'Case No: 23456', testDate: 'Last Test: 12/12/2020' },
-    { name: 'Patient 3', caseNumber: 'Case No: 34567', testDate: 'Last Test: 12/12/2020' },
-  ];
+  const [searchText, setSearchText] = useState('');
+  const [clinicalTests, setClinicalTests] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
-  // Handle the "eye" button press to navigate to Clinical Test Details
-  const handleViewDetails = (patient) => {
-    navigation.navigate('ClinicalTestDetails', {
-      name: patient.name,
-      caseNumber: patient.caseNumber,
-      testDate: patient.testDate,
-    });
+  useEffect(() => {
+    const fetchClinicalTests = async () => {
+      try {
+        const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests');
+        const data = await response.json();
+        setClinicalTests(data.data);
+      } catch (error) {
+        console.error('Error fetching clinical tests:', error);
+      }
+    };
+
+    fetchClinicalTests();
+  }, []);
+
+  const handleViewDetails = (clinicalTest) => {
+    navigation.navigate('ClinicalTestDetails', { clinicalTestId: clinicalTest._id });
+  };
+
+  const handleDelete = (clinicalTestId) => {
+    // Show a confirmation dialog before deleting
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this clinical test?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            // Send a DELETE request to your server to delete the clinical test
+            fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`, {
+              method: 'DELETE',
+            })
+              .then((response) => {
+                if (response.ok) {
+                  // Handle the success, you may also want to remove the deleted clinical test from the state
+                  console.log('Clinical test deleted successfully');
+                  // Reload the clinical tests list after deletion (you can update this part)
+                  fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests')
+                    .then((response) => response.json())
+                    .then((data) => setClinicalTests(data.data))
+                    .catch((error) => console.error('Error fetching clinical tests:', error));
+                } else {
+                  console.error('Error deleting clinical test:', response.status);
+                }
+              })
+              .catch((error) => {
+                console.error('Error deleting clinical test:', error);
+              });
+          },
+          style: 'destructive',
+        },
+      ]
+    );
   };
 
   const handleSearch = () => {
     // Implement your search logic here
     // You can use the 'searchText' state to filter the list of clinical tests
+    const filteredResults = clinicalTests.filter((clinicalTest) =>
+      `${clinicalTest.patient?.firstName} ${clinicalTest.patient?.lastName}`
+        .toLowerCase()
+        .includes(searchText.toLowerCase())
+    );
+    setSearchResults(filteredResults);
+  };
+
+  const handleClearSearch = () => {
+    setSearchText('');
+    setSearchResults([]);
   };
 
   return (
@@ -34,36 +91,49 @@ function ClinicalTests({ navigation }) {
             value={searchText}
             onChangeText={(text) => setSearchText(text)}
           />
+          {searchText.length > 0 && (
+            <TouchableOpacity style={styles.clearSearchButton} onPress={handleClearSearch}>
+              <Icon name="times" size={20} color="gray" />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
             <Icon name="search" size={20} color="gray" />
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
-        {patients.map((patient, index) => (
+        {(searchResults.length > 0 ? searchResults : clinicalTests).map((clinicalTest, index) => (
           <View style={styles.card} key={index}>
-            <View style={styles.cardLeft}>
-              <Text style={styles.cardName}>{patient.name}</Text>
-              <Text style={styles.cardInfo}>{patient.caseNumber}</Text>
-              <Text style={styles.cardInfo}>{patient.testDate}</Text>
+            <View style={styles.cardTop}>
+              <Text style={styles.cardName}>
+                {clinicalTest.patient?.firstName} {clinicalTest.patient?.lastName}
+              </Text>
+              <Text style={styles.cardDate}>
+                {new Date(clinicalTest.creationDateTime).toLocaleString()}
+              </Text>
             </View>
-            <View style={styles.cardRight}>
-              <View style={styles.buttonGroup}>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
-                  <Icon name="trash" size={20} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { navigation.navigate('Edit Clinical Test') }}>
-                  <Icon name="pencil" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.buttonGroup}>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { handleViewDetails(patient)/* Handle view details*/ }}>
-                  <Icon name="eye" size={17} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonFilled} onPress={() => { navigation.navigate('Add Clinical Test') }}>
-                  <Icon name="plus" size={17} color="white" />
-                </TouchableOpacity>
-              </View>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity style={styles.buttonFilled} onPress={() => handleDelete(clinicalTest._id)}>
+                <Icon name="trash" size={20} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonFilled}
+                onPress={() => navigation.navigate('Edit Clinical Test')}
+              >
+                <Icon name="pencil" size={20} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonFilled}
+                onPress={() => handleViewDetails(clinicalTest)}
+              >
+                <Icon name="eye" size={20} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonFilled}
+                onPress={() => navigation.navigate('AddClinicalTest')}
+              >
+                <Icon name="plus" size={17} color="white" />
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -103,6 +173,17 @@ const styles = StyleSheet.create({
   searchButton: {
     padding: 10,
   },
+  clearSearchButton: {
+    padding: 10,
+  },
+  addButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ED1703',
+    borderRadius: 50,
+    width: 40,
+    height: 40,
+  },
   cardContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -114,50 +195,36 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     margin: 10,
     padding: 20,
-    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  cardLeft: {
-    width: '60%',
-    paddingTop: 15,
-    paddingBottom: 10,
-  },
-  cardRight: {
-    alignItems: 'flex-end',
   },
   cardName: {
     fontSize: 18,
-    paddingBottom: 5,
+    paddingBottom: 20,
     fontWeight: 'bold',
   },
-  cardInfo: {
+  cardTop: {
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  cardDate: {
     fontSize: 16,
-    paddingTop: 5,
+    color: 'gray',
   },
   buttonGroup: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
   buttonFilled: {
     backgroundColor: '#ED1703',
+    width: 40,
     borderRadius: 10,
     padding: 10,
     margin: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-  },
-  viewDetailsButton: {
-    backgroundColor: '#ED1703',
-    borderRadius: 10,
-    padding: 10,
-  },
-  viewDetailsButtonText: {
-    color: 'white',
-    textAlign: 'center',
   },
 });
 

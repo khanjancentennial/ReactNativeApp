@@ -9,6 +9,7 @@ function AllPatients({ navigation }) {
   const [searchResults, setSearchResults] = useState([]);
   const [patientsFound, setPatientsFound] = useState(true); // State to track whether patients are found
 
+  
   useEffect(() => {
     axios
       .get('https://group3-mapd713.onrender.com/patient/list')

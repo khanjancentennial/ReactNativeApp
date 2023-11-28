@@ -1,70 +1,90 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function ClinicalTestDetails({navigation, route }) {
-  // Get the details passed from the previous page
-  const { name, caseNumber, testDate, bloodPressure, respiratoryRate, bloodOxygenLevel, heartRate, gender, chiefComplaint, pastMedicalHistory, medicalDiagnosis, medicalPrescription } = route.params;
+function ClinicalTestDetails({ navigation, route }) {
+  const { clinicalTestId } = route.params;
+  const [clinicalTest, setClinicalTest] = useState(null);
+
+  useEffect(() => {
+    const fetchClinicalTestDetails = async () => {
+      try {
+        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests`);
+        const data = await response.json();
+        const test = data.data.find(test => test._id === clinicalTestId);
+
+        if (test) {
+          setClinicalTest(test);
+        } else {
+          console.error('Clinical test not found');
+        }
+      } catch (error) {
+        console.error('Error fetching clinical test details:', error);
+      }
+    };
+
+    fetchClinicalTestDetails();
+  }, [clinicalTestId]);
+
+  const handleEdit = () => {
+    navigation.navigate('Edit Clinical Test', { clinicalTestId });
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this clinical test?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`, {
+              method: 'DELETE',
+            })
+              .then((response) => {
+                if (response.ok) {
+                  console.log('Clinical test deleted successfully');
+                  navigation.goBack();
+                } else {
+                  console.error('Error deleting clinical test:', response.status);
+                }
+              })
+              .catch((error) => {
+                console.error('Error deleting clinical test:', error);
+              });
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
+  if (!clinicalTest) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  const { patient, _id, __v, creationDateTime, ...testDetails } = clinicalTest;
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.header}>
-        <Text style={styles.pageHeading}>Clinical Test Details</Text>
-      </View> */}
       <View style={styles.detailsContainer}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Patient's Name:</Text>
-          <Text style={styles.detailInfo}>{name}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Case Number:</Text>
-          <Text style={styles.detailInfo}>{caseNumber}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Test Date:</Text>
-          <Text style={styles.detailInfo}>{testDate}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Blood Pressure:</Text>
-          <Text style={styles.detailInfo}>{bloodPressure}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Respiratory Rate:</Text>
-          <Text style={styles.detailInfo}>{respiratoryRate}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Blood Oxygen Level:</Text>
-          <Text style={styles.detailInfo}>{bloodOxygenLevel}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Heart Rate:</Text>
-          <Text style={styles.detailInfo}>{heartRate}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Gender:</Text>
-          <Text style={styles.detailInfo}>{gender}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Chief Complaint:</Text>
-          <Text style={styles.detailInfo}>{chiefComplaint}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Past Medical History:</Text>
-          <Text style={styles.detailInfo}>{pastMedicalHistory}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Medical Diagnosis:</Text>
-          <Text style={styles.detailInfo}>{medicalDiagnosis}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Medical Prescription:</Text>
-          <Text style={styles.detailInfo}>{medicalPrescription}</Text>
-        </View>
+        {renderDetailRow('Patient\'s Name:', `${patient.firstName} ${patient.lastName}`)}
+        {Object.entries(testDetails).map(([label, value]) => renderDetailRow(getCustomLabel(label), value))}
+        {renderDateTimeRow('Test Date:', creationDateTime)}
+
         <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() => navigation.navigate('Edit Clinical Test')}>
+          <TouchableOpacity style={styles.buttonFilled} onPress={handleEdit}>
             <Icon name="edit" size={20} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonFilled} onPress={() => { /* Handle delete user action */ }}>
+          <TouchableOpacity style={styles.buttonFilled} onPress={handleDelete}>
             <Icon name="trash" size={20} color="white" />
           </TouchableOpacity>
         </View>
@@ -73,24 +93,62 @@ function ClinicalTestDetails({navigation, route }) {
   );
 }
 
+// Function to map the original labels to hardcoded labels
+const getCustomLabel = (label) => {
+  const labelMap = {
+    bloodPressure: 'Blood Pressure',
+    respiratoryRate: 'Respiratory Rate',
+    bloodOxygenLevel: 'Blood Oxygen Level',
+    heartbeatRate: 'Heart Rate',
+    chiefComplaint: 'Chief Complaint',
+    pastMedicalHistory: 'Past Medical History',
+    medicalDiagnosis: 'Medical Diagnosis',
+    medicalPrescription: 'Medical Prescription',
+    creationDateTime: 'Test Date',
+  };
+
+  return labelMap[label] || label;
+};
+
+const renderDetailRow = (label, value) => {
+  // Exclude specific fields from rendering
+  const excludeFields = ['_id', '__v'];
+  if (excludeFields.includes(label)) {
+    return null;
+  }
+
+  return (
+    <View style={styles.detailRow} key={label}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailInfo}>{value}</Text>
+    </View>
+  );
+};
+
+const renderDateTimeRow = (label, dateTime) => {
+  const formattedDate = new Date(dateTime).toLocaleDateString();
+  const formattedTime = new Date(dateTime).toLocaleTimeString();
+
+  return (
+    <>
+      <View style={styles.detailRow} key={label}>
+        <Text style={styles.detailLabel}>{label}</Text>
+        <Text style={styles.detailInfo}>{formattedDate}</Text>
+      </View>
+      <View style={styles.detailRow} key="Test Time:">
+        <Text style={styles.detailLabel}>Test Time:</Text>
+        <Text style={styles.detailInfo}>{formattedTime}</Text>
+      </View>
+    </>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: 10,
-    marginTop: 20,
-  },
-  pageHeading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ED1703',
   },
   detailsContainer: {
     flex: 1,
@@ -111,6 +169,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     width: '50%',
   },
+  sectionHeading: {
+    marginTop: 20,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+    width: '80%',
+  },
+  sectionHeadingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -124,10 +193,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
   },
 });
 

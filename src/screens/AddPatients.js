@@ -55,8 +55,20 @@ function AddPatientScreen({ navigation }) {
       .post('https://group3-mapd713.onrender.com/patient/add', newPatientData)
       .then((response) => {
         console.log('Patient added successfully: ', response.data);
-        alert('Patient added successfully');
-        navigation.navigate('AllPatients');
+        Alert.alert('Success', 'Patient added successfully.');
+        // Reset the form
+        setFirstName('');
+        setLastName('');
+        setPhoneNumber('');
+        setEmail('');
+        setHeight('');
+        setWeight('');
+        setAddress('');
+        setGender('');
+        
+        // redirect to All Patients screen after adding patient and it should refresh the page or reload the page to show the new patient
+        navigation.navigate('All Patients');
+
       })
       .catch((error) => {
         console.error('Error adding patient:', error);

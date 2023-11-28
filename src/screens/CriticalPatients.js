@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 function CriticalPatients({ navigation }) {
   const [searchText, setSearchText] = useState(''); // State to store the search text
-  const patients = [
-    { name: 'Patient 1', caseNumber: 'Case No: 12345' },
-    { name: 'Patient 2', caseNumber: 'Case No: 23456' },
-    { name: 'Patient 3', caseNumber: 'Case No: 34567' },
-  ];
+  const [criticalPatients, setCriticalPatients] = useState([]);
+
+  useEffect(() => {
+    const fetchCriticalPatients = async () => {
+      try {
+        const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/critical-patients');
+        const data = await response.json();
+        setCriticalPatients(data.data);
+      } catch (error) {
+        console.error('Error fetching critical patients:', error);
+      }
+    };
+
+    fetchCriticalPatients();
+  }, []);
 
   const handleSearch = () => {
     // Implement your search logic here
@@ -31,16 +41,20 @@ function CriticalPatients({ navigation }) {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
-        {patients.map((patient, index) => (
+        {criticalPatients.map((clinicalTest, index) => (
           <View style={styles.card} key={index}>
-            <View style={styles.cardLeft}>
-              <Text style={styles.cardName}>{patient.name}</Text>
-              <Text style={styles.cardInfo}>{patient.caseNumber}</Text>
-            </View>
-            <View style={styles.cardRight}>
-              <TouchableOpacity style={styles.viewDetailsButton} onPress={() => navigation.navigate('Critical Patient Details')}>
-                <Text style={styles.viewDetailsButtonText}>View Details</Text>
-              </TouchableOpacity>
+            <Text style={styles.cardName}>{clinicalTest.patientInfo.firstName} {clinicalTest.patientInfo.lastName}</Text>
+            <Text style={styles.cardInfo}>{`Mail ID: ${clinicalTest.patientInfo.email}`}</Text>
+            <View style={styles.buttonContainer}>
+            <TouchableOpacity
+  style={styles.viewDetailsButton}
+  onPress={() => {
+    console.log('Selected Patient:', clinicalTest); // Log the selected patient details
+    navigation.navigate('ViewCriticalPatientDetails', { clinicalTest });
+  }}
+>
+  <Text style={styles.viewDetailsButtonText}>View Details</Text>
+</TouchableOpacity>
             </View>
           </View>
         ))}
@@ -91,46 +105,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     margin: 10,
     padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  cardLeft: {
-    width: '60%',
-    paddingTop: 15,
-    paddingBottom: 10,
-  },
-  cardRight: {
-    alignItems: 'flex-end',
-    paddingTop: 20,
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
   },
   cardName: {
     fontSize: 18,
-    paddingBottom: 20,
     fontWeight: 'bold',
+    marginBottom: 10, // Spacing between name and email
   },
   cardInfo: {
     fontSize: 16,
+    marginBottom: 10, // Spacing between email and button
   },
-  buttonGroup: {
-    flexDirection: 'row',
-  },
-  buttonFilled: {
-    backgroundColor: '#ED1703',
-    borderRadius: 10,
-    padding: 10,
-    margin: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
+  buttonContainer: {
+    width: '100%', // Make the button take the full width of the card
   },
   viewDetailsButton: {
     backgroundColor: '#ED1703',
     borderRadius: 10,
     padding: 10,
+    alignItems: 'center',
   },
   viewDetailsButtonText: {
     color: 'white',
