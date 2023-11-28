@@ -12,26 +12,25 @@ function AddClinicalTestScreen({ navigation, route }) {
   const [medicalDiagnosis, setMedicalDiagnosis] = useState('');
   const [medicalPrescription, setMedicalPrescription] = useState('');
   const [patientName, setPatientName] = useState('');
-
+  const { firstName, lastName } = route.params ?? {};
   // Use effect to set initial values when the component mounts
   useEffect(() => {
-    // Get patientId from navigation parameters
-    const patientId = route.params?.patientId;
-  
+    // Get patientId, firstName, and lastName from navigation parameters
+    const { patientId, firstName, lastName } = route.params ?? {};
+    
     // Assuming you have a function to fetch patient details by ID
-    // Replace this with your actual API call or data fetching logic
-    const fetchPatientDetails = async (id) => {
+    const fetchPatientDetails = async (id, firstName, lastName) => {
       try {
         // Example API call to get patient details
-        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests`);
+        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests?patientId=${id}`);
         const data = await response.json();
-  
+    
         // Filter clinical tests for the specific patient ID
-        const patientTests = data.data.filter((test) => test.patient?._id === patientId);
-  
+        const patientTests = data.data.filter((test) => test.patient?._id === id);
+    
         if (patientTests.length > 0) {
           // Set the patient details to state
-          setPatientName(`${patientTests[0].patient.firstName} ${patientTests[0].patient.lastName}`);
+          setPatientName(`${firstName} ${lastName}`);
         }
       } catch (error) {
         console.error('Error fetching patient details:', error);
@@ -42,7 +41,9 @@ function AddClinicalTestScreen({ navigation, route }) {
     if (patientId) {
       fetchPatientDetails(patientId);
     }
-  }, [route.params?.patientId]);
+  }, [route.params?.patientId, route.params?.firstName, route.params?.lastName]);
+  
+  
 
   const handleRegister = async () => {
     try {
@@ -106,7 +107,7 @@ function AddClinicalTestScreen({ navigation, route }) {
       {/* <Text style={styles.heading}></Text> */}
       <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Name:</Text>
-          <Text style={styles.detailInfo}>{patientName}</Text>
+          <Text style={styles.detailInfo}>{firstName} {lastName}</Text>
         </View>
       <TextInput
         style={styles.input}

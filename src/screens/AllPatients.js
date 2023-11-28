@@ -9,7 +9,6 @@ function AllPatients({ navigation }) {
   const [searchResults, setSearchResults] = useState([]);
   const [patientsFound, setPatientsFound] = useState(true); // State to track whether patients are found
 
-  
   useEffect(() => {
     axios
       .get('https://group3-mapd713.onrender.com/patient/list')
@@ -49,9 +48,17 @@ function AllPatients({ navigation }) {
     navigation.navigate('EditPatientDetails', { patientId });
   };
 
-  const handleTestButton = (patientId) => {
-    // Navigate to the "AddClinicalTest" screen and pass the patientId as a parameter
-    navigation.navigate('AddClinicalTest', { patientId });
+  const handleTestButton = (patientId, firstName, lastName) => {
+    // Log the patientId, firstName, and lastName to the console
+    console.log('Patient ID:', patientId);
+    console.log('First Name:', firstName);
+    console.log('Last Name:', lastName);
+  
+    // Alternatively, use Alert to display the information
+    // Alert.alert('Patient Information', `ID: ${patientId}, Name: ${firstName} ${lastName}`);
+  
+    // Navigate to the "AddClinicalTest" screen and pass the patientId, firstName, and lastName as parameters
+    navigation.navigate('AddClinicalTest', { patientId, firstName, lastName });
   };
 
   const handleDelete = (patientId) => {
@@ -149,9 +156,9 @@ function AllPatients({ navigation }) {
   <Icon name="info-circle" size={20} color="white" /> 
 </TouchableOpacity>
 
-<TouchableOpacity style={styles.buttonFilled} onPress={() => handleTestButton(patient._id)}>
-                <Icon name="flask" size={20} color="white" /> 
-              </TouchableOpacity>
+<TouchableOpacity style={styles.buttonFilled} onPress={() => handleTestButton(patient._id, patient.firstName, patient.lastName)}>
+  <Icon name="flask" size={20} color="white" /> 
+</TouchableOpacity>
 
             </View>
           </View>
