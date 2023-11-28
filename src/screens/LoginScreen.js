@@ -7,7 +7,8 @@ function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // State variable to track loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [userDetails, setUserDetails] = useState(null); // Added state for user details
 
   const handleLogin = () => {
     console.log('Logging in with email:', email, 'and password:', password);
@@ -16,7 +17,7 @@ function LoginScreen({ navigation }) {
       Alert.alert('Validation Error', 'Please enter both email and password.');
       return;
     } else {
-      setIsLoading(true); // Set loading state to true
+      setIsLoading(true);
 
       fetch('https://group3-mapd713.onrender.com/auth/login', {
         method: 'POST',
@@ -27,17 +28,17 @@ function LoginScreen({ navigation }) {
       })
         .then((response) => {
           if (response.ok) {
-            return response.json(); // Parse the response JSON
+            return response.json();
           } else {
             throw new Error('Invalid email or password. Please try again.');
           }
         })
         .then((data) => {
           if (data.success) {
-            // Handle a successful login response
-            navigation.navigate('Main'); // Redirect to the Home screen
+            setUserDetails(data.user); // Store user details in state
+            navigation.navigate('Main');
+            console.log('Login successful', `User ID: ${data.user._id}`);
           } else {
-            // Handle authentication error (data.success is false)
             Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
           }
         })
@@ -45,14 +46,15 @@ function LoginScreen({ navigation }) {
           if (error instanceof TypeError && error.message === 'Network request failed') {
             Alert.alert('Network Error', 'Please check your internet connection and try again.');
           } else {
-            console.error(error); // Log the detailed server error
+            console.error(error);
           }
         })
         .finally(() => {
-          setIsLoading(false); // Set loading state to false when the process is completed
+          setIsLoading(false);
         });
     }
   };
+  
 
   return (
     <View style={styles.container}>

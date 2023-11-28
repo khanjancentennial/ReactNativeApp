@@ -50,12 +50,6 @@ function AllPatients({ navigation }) {
 
   const handleTestButton = (patientId, firstName, lastName) => {
     // Log the patientId, firstName, and lastName to the console
-    console.log('Patient ID:', patientId);
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-  
-    // Alternatively, use Alert to display the information
-    // Alert.alert('Patient Information', `ID: ${patientId}, Name: ${firstName} ${lastName}`);
   
     // Navigate to the "AddClinicalTest" screen and pass the patientId, firstName, and lastName as parameters
     navigation.navigate('AddClinicalTest', { patientId, firstName, lastName });
