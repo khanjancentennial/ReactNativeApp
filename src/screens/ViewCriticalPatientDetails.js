@@ -7,14 +7,13 @@ function ViewCriticalPatientDetails({ route }) {
       patientInfo: {
         firstName,
         lastName,
-        email, // Add any other properties you want to display
+        email, 
+        gender,
       },
-      caseNumber,
       bloodPressure,
       respiratoryRate,
       bloodOxygenLevel,
       heartbeatRate,
-      gender,
       chiefComplaint,
       pastMedicalHistory,
       medicalDiagnosis,
@@ -32,10 +31,6 @@ function ViewCriticalPatientDetails({ route }) {
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Email:</Text>
           <Text style={styles.detailInfo}>{email}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Case Number:</Text>
-          <Text style={styles.detailInfo}>{caseNumber}</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Blood Pressure:</Text>

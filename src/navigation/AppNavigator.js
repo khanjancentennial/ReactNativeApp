@@ -41,7 +41,7 @@ function AppNavigator() {
         <Stack.Screen name="EditClinicalTest" component={EditClinicalTest} options={{headerTitle:'Edit Test'}} />
         <Stack.Screen name="ViewCriticalPatientDetails" component={ViewCritricalPatientDetails} options={{headerTitle:'Critical Patients'}} />
         <Stack.Screen name="User Profile" component={UserProfileScreen} options={{headerTitle:'Profile'}}/>
-        <Stack.Screen name="Edit User Profile" component={EditUserProfileScreen} options={{headerTitle:'Edit Profile'}} />
+        <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} options={{headerTitle:'Edit Profile'}} />
 
 
       </Stack.Navigator>

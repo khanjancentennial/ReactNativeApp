@@ -25,6 +25,10 @@ function ClinicalTests({ navigation }) {
     navigation.navigate('ClinicalTestDetails', { clinicalTestId: clinicalTest._id });
   };
 
+  const handleAddClinicalTest = (patientId, firstName, lastName) => {
+    navigation.navigate('AddClinicalTest', { patientId, firstName, lastName });
+  };
+
   const handleDelete = (clinicalTestId) => {
     // Show a confirmation dialog before deleting
     Alert.alert(
@@ -117,11 +121,11 @@ function ClinicalTests({ navigation }) {
                 <Icon name="trash" size={20} color="white" />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.buttonFilled}
-                onPress={() => navigation.navigate('Edit Clinical Test')}
-              >
-                <Icon name="pencil" size={20} color="white" />
-              </TouchableOpacity>
+      style={styles.buttonFilled}
+      onPress={() => navigation.navigate('EditClinicalTest', { clinicalTestId: clinicalTest._id })}
+    >
+      <Icon name="pencil" size={20} color="white" />
+    </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonFilled}
                 onPress={() => handleViewDetails(clinicalTest)}
@@ -129,11 +133,17 @@ function ClinicalTests({ navigation }) {
                 <Icon name="eye" size={20} color="white" />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.buttonFilled}
-                onPress={() => navigation.navigate('AddClinicalTest')}
-              >
-                <Icon name="plus" size={17} color="white" />
-              </TouchableOpacity>
+              style={styles.buttonFilled}
+              onPress={() =>
+                handleAddClinicalTest(
+                  clinicalTest.patient?._id,
+                  clinicalTest.patient?.firstName,
+                  clinicalTest.patient?.lastName
+                )
+              }
+            >
+              <Icon name="plus" size={17} color="white" />
+            </TouchableOpacity>
             </View>
           </View>
         ))}

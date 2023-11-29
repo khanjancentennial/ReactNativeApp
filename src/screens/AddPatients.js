@@ -67,7 +67,7 @@ function AddPatientScreen({ navigation }) {
         setGender('');
         
         // redirect to All Patients screen after adding patient and it should refresh the page or reload the page to show the new patient
-        navigation.navigate('All Patients');
+        navigation.navigate('AllPatients');
 
       })
       .catch((error) => {

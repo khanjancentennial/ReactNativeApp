@@ -9,13 +9,15 @@ function UserProfileScreen({ route, navigation }) {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const patientId = route.params?.patientId;
+        // Extract userId from route.params
+        const userId = route.params?.userId;
 
-        if (!patientId) {
-          throw new Error('Patient ID not provided');
+        console.log('userId', userId);
+        if (!userId) {
+          throw new Error('User ID not provided');
         }
 
-        const response = await fetch(`https://group3-mapd713.onrender.com/auth/users/${patientId}`);
+        const response = await fetch(`https://group3-mapd713.onrender.com/auth/users/${userId}`);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -36,7 +38,7 @@ function UserProfileScreen({ route, navigation }) {
     };
 
     fetchUserDetails();
-  }, [route.params?.patientId]);
+  }, [route.params?.userId]);
 
   return (
     <View style={styles.container}>
@@ -44,24 +46,30 @@ function UserProfileScreen({ route, navigation }) {
         <ActivityIndicator size="large" color="#ED1703" />
       ) : (
         <>
-          <Text style={styles.nameLabel}>{`${userDetails.firstName} ${userDetails.lastName}`}</Text>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Gender:</Text>
-            <Text style={styles.detailInfo}>{userDetails.gender === 0 ? 'Male' : 'Female'}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Phone Number:</Text>
-            <Text style={styles.detailInfo}>{userDetails.phoneNumber}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Email:</Text>
-            <Text style={styles.detailInfo}>{userDetails.email}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Profession:</Text>
-            <Text style={styles.detailInfo}>{userDetails.profession}</Text>
-          </View>
-          {/* Add other details */}
+          {userDetails ? (
+            <>
+              <Text style={styles.nameLabel}>{`${userDetails.firstName} ${userDetails.lastName}`}</Text>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Gender:</Text>
+                <Text style={styles.detailInfo}>{userDetails.gender === 0 ? 'Male' : 'Female'}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Phone Number:</Text>
+                <Text style={styles.detailInfo}>{userDetails.phoneNumber}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Email:</Text>
+                <Text style={styles.detailInfo}>{userDetails.email}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Profession:</Text>
+                <Text style={styles.detailInfo}>{userDetails.profession}</Text>
+              </View>
+              {/* Add other details */}
+            </>
+          ) : (
+            <Text>Error: User details not available</Text>
+          )}
         </>
       )}
 
@@ -114,10 +122,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
   },
 });
 

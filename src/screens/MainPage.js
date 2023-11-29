@@ -1,58 +1,79 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CardButton from '../components/CardButton';
 
-function MainPage({ navigation }) {
-    const handleCardClick = (destination) => {
-      navigation.navigate(destination);
-    };
+function MainPage({ navigation, route }) {
+  const { userId } = route.params;
+  console.log('userId', userId);
   
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    
+  }, [userId]);
   
-    const toggleDropdown = () => {
-      setIsDropdownOpen(!isDropdownOpen);
-    };
-  
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.username}>Hello</Text>
-          <TouchableOpacity style={styles.dropdown} onPress={toggleDropdown}>
-            <Icon name="user" size={24} color="black" />
-            {isDropdownOpen && (
-              <View style={styles.dropdownContent}>
-                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigation.navigate('User Profile')}>
-                  <Text>Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Text>Logout</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-        <CardButton
-          style={styles.card} // Pass the style here
-          imageSource={require('../../assets/allPatients.jpg')}
-          title="All Patients"
-          onPress={() => handleCardClick('AllPatients')}
-        />
-        <CardButton
-          style={styles.card} // Pass the style here
-          imageSource={require('../../assets/critical.jpg')}
-          title="Critical Patients"
-          onPress={() => handleCardClick('CriticalPatients')}
-        />
-        <CardButton
-          style={styles.card} // Pass the style here
-          imageSource={require('../../assets/addTest.jpg')}
-          title="Clinical Tests"
-          onPress={() => handleCardClick('ClinicalTests')}
-        />
+
+  const handleCardClick = (destination) => {
+    navigation.navigate(destination, { userId });
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.username}>Hello {userName}</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={toggleDropdown}>
+          <Icon name="user" size={24} color="black" />
+          {isDropdownOpen && (
+            <View style={styles.dropdownContent}>
+              <TouchableOpacity
+  style={styles.dropdownItem}
+  onPress={() => {
+    // Check if userId has a value before navigating
+    if (userId) {
+      navigation.navigate('EditUserProfile', { userId });
+      console.log('main', userId);
+    } else {
+      // Handle the case where userId is not available
+      console.error('userId is not available');
+    }
+  }}
+>
+  <Text>Profile</Text>
+</TouchableOpacity>
+              <TouchableOpacity style={styles.dropdownItem}>
+                <Text>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
-    );
-  }
+      <CardButton
+        style={styles.card}
+        imageSource={require('../../assets/allPatients.jpg')}
+        title="All Patients"
+        onPress={() => handleCardClick('AllPatients')}
+      />
+      <CardButton
+        style={styles.card}
+        imageSource={require('../../assets/critical.jpg')}
+        title="Critical Patients"
+        onPress={() => handleCardClick('CriticalPatients')}
+      />
+      <CardButton
+        style={styles.card}
+        imageSource={require('../../assets/addTest.jpg')}
+        title="Clinical Tests"
+        onPress={() => handleCardClick('ClinicalTests')}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -99,26 +120,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  cardText: {
-    fontSize: 16,
-  },
-  cardGroup: {
-    flexDirection: 'row',
-    marginTop: 20,
-  },
-  cardButton: {
-    flex: 1,
-    backgroundColor: '#ED1703',
-    margin: 5,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    height: 800,
-  },
-  cardButtonText: {
-    color: 'white',
   },
 });
 

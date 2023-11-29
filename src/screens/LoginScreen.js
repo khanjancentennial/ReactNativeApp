@@ -36,12 +36,12 @@ function LoginScreen({ navigation }) {
         .then((data) => {
           if (data.success) {
             setUserDetails(data.user); // Store user details in state
-            navigation.navigate('Main');
+            navigation.navigate('Main', { userId: data.user._id }); // Pass user ID to 'Main' screen
             console.log('Login successful', `User ID: ${data.user._id}`);
           } else {
             Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
           }
-        })
+        })        
         .catch((error) => {
           if (error instanceof TypeError && error.message === 'Network request failed') {
             Alert.alert('Network Error', 'Please check your internet connection and try again.');
