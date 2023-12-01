@@ -22,7 +22,7 @@ function AddClinicalTestScreen({ navigation, route }) {
     const fetchPatientDetails = async (id, firstName, lastName) => {
       try {
         // Example API call to get patient details
-        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests?patientId=${id}`);
+        const response = await fetch(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests?patientId=${id}`);
         const data = await response.json();
     
         // Filter clinical tests for the specific patient ID
@@ -62,7 +62,7 @@ function AddClinicalTestScreen({ navigation, route }) {
       };
   
       // Make a POST request to add the new clinical test
-      const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests', {
+      const response = await fetch('https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

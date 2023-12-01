@@ -86,7 +86,7 @@ function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Enter Details</Text>
+      <Text style={styles.heading}></Text>
       <TextInput
         style={styles.input}
         placeholder="First Name"

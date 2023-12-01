@@ -9,7 +9,7 @@ function CriticalPatients({ navigation }) {
   useEffect(() => {
     const fetchCriticalPatients = async () => {
       try {
-        const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/critical-patients');
+        const response = await fetch('https://group3-mapd713.onrender.com/api/clinical-tests/critical-patients');
         const data = await response.json();
         setCriticalPatients(data.data);
       } catch (error) {

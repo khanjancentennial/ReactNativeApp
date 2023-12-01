@@ -10,7 +10,7 @@ function ClinicalTests({ navigation }) {
   useEffect(() => {
     const fetchClinicalTests = async () => {
       try {
-        const response = await fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests');
+        const response = await fetch('https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests');
         const data = await response.json();
         setClinicalTests(data.data);
       } catch (error) {
@@ -43,7 +43,7 @@ function ClinicalTests({ navigation }) {
           text: 'Delete',
           onPress: () => {
             // Send a DELETE request to your server to delete the clinical test
-            fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`, {
+            fetch(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`, {
               method: 'DELETE',
             })
               .then((response) => {
@@ -51,7 +51,7 @@ function ClinicalTests({ navigation }) {
                   // Handle the success, you may also want to remove the deleted clinical test from the state
                   console.log('Clinical test deleted successfully');
                   // Reload the clinical tests list after deletion (you can update this part)
-                  fetch('https://group3-mapd713.onrender.com/clinicalTest/clinical-tests')
+                  fetch('https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests')
                     .then((response) => response.json())
                     .then((data) => setClinicalTests(data.data))
                     .catch((error) => console.error('Error fetching clinical tests:', error));

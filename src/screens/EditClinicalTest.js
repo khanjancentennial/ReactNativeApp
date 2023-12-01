@@ -20,7 +20,7 @@ function EditClinicalTestScreen({ route, navigation }) {
     const fetchClinicalTestDetails = async () => {
       try {
         console.log('1', clinicalTestId);
-        const response = await axios.get(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`);
+        const response = await axios.get(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`);
         console.log('2', clinicalTestId, response.data);
   
         if (response.data.success) {
@@ -65,7 +65,7 @@ function EditClinicalTestScreen({ route, navigation }) {
   
       // Send the update request
       const response = await axios.put(
-        `https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`,
+        `https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`,
         clinicalTestDetails
       );
   

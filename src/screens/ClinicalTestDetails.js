@@ -9,7 +9,7 @@ function ClinicalTestDetails({ navigation, route }) {
   useEffect(() => {
     const fetchClinicalTestDetails = async () => {
       try {
-        const response = await fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests`);
+        const response = await fetch(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests`);
         const data = await response.json();
         const test = data.data.find(test => test._id === clinicalTestId);
 
@@ -27,7 +27,7 @@ function ClinicalTestDetails({ navigation, route }) {
   }, [clinicalTestId]);
 
   const handleEdit = () => {
-    navigation.navigate('Edit Clinical Test', { clinicalTestId });
+    navigation.navigate('EditClinicalTest', { clinicalTestId });
   };
 
   const handleDelete = () => {
@@ -42,7 +42,7 @@ function ClinicalTestDetails({ navigation, route }) {
         {
           text: 'Delete',
           onPress: () => {
-            fetch(`https://group3-mapd713.onrender.com/clinicalTest/clinical-tests/${clinicalTestId}`, {
+            fetch(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`, {
               method: 'DELETE',
             })
               .then((response) => {
