@@ -60,7 +60,7 @@ function AddClinicalTestScreen({ navigation, route }) {
 
     // Additional validation to check if values are not above 800
     if (parseInt(bloodPressure) > 800 || parseInt(respiratoryRate) > 800 || parseInt(bloodOxygenLevel) > 800 || parseInt(heartbeatRate) > 800) {
-      Alert.alert('Validation Error', 'Vital signs values should not exceed 800.', [
+      Alert.alert('Validation Error', 'Vital signs values are not valid', [
         {
           text: 'OK',
         },
