@@ -1,23 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import CardButton from '../components/CardButton';
 
 function MainPage({ navigation, route }) {
   const { userId } = route.params;
   console.log('userId', userId);
-  
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
-
+  
   useEffect(() => {
-    
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`https://group3-mapd713.onrender.com/auth/users/${userId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const { data } = await response.json();
+  
+        console.log('User data:', data);
+  
+        // Assuming your API response has firstName and lastName fields
+        const { firstName, lastName } = data;
+        setUserName(`${firstName} ${lastName}`);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        // You can set a default username or handle the error accordingly
+        setUserName('User');
+      }
+    };
+  
+    fetchUserData();
   }, [userId]);
   
 
   const handleCardClick = (destination) => {
     navigation.navigate(destination, { userId });
   };
+
+  const handleLogout = () => {
+    // Assuming you use react-navigation to navigate to the LoginScreen
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          onPress: () => {
+            // Show alert for successful logout
+            Alert.alert('Logout', 'Logged out successfully');
+  
+            // Navigate to the LoginScreen
+            navigation.navigate('Login');
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -26,27 +72,25 @@ function MainPage({ navigation, route }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.username}>Hello {userName}</Text>
+        <Text style={styles.username}>Hello, {userName}</Text>
         <TouchableOpacity style={styles.dropdown} onPress={toggleDropdown}>
-          <Icon name="user" size={24} color="black" />
+          <Image source={require('../../assets/icons/profile-user.png')} style={styles.profileImage} />
           {isDropdownOpen && (
             <View style={styles.dropdownContent}>
               <TouchableOpacity
-  style={styles.dropdownItem}
-  onPress={() => {
-    // Check if userId has a value before navigating
-    if (userId) {
-      navigation.navigate('EditUserProfile', { userId });
-      console.log('main', userId);
-    } else {
-      // Handle the case where userId is not available
-      console.error('userId is not available');
-    }
-  }}
->
-  <Text>Profile</Text>
-</TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownItem}>
+                style={styles.dropdownItem}
+                onPress={() => {
+                  if (userId) {
+                    navigation.navigate('EditUserProfile', { userId });
+                    console.log('main', userId);
+                  } else {
+                    console.error('userId is not available');
+                  }
+                }}
+              >
+                <Text>Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.dropdownItem} onPress={handleLogout}>
                 <Text>Logout</Text>
               </TouchableOpacity>
             </View>
@@ -100,6 +144,11 @@ const styles = StyleSheet.create({
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  profileImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
   dropdownContent: {
     position: 'absolute',

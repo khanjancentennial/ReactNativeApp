@@ -39,7 +39,7 @@ function EditPatientDetails({ route, navigation }) {
       .catch((error) => {
         console.error('Error fetching patient data:', error);
       });
-  }, [patientId]);
+  }, [patientId]);  
 
   const handleUpdate = () => {
     // Send a PUT request to update the patient details
@@ -74,9 +74,10 @@ function EditPatientDetails({ route, navigation }) {
   
 
   const handleChange = (field, value) => {
-    // Update the patient state with the selected option (either 'Male' or 'Female')
+    // Update the patient state with the selected gender value
     setPatient({ ...patient, [field]: value });
   };
+  
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -128,11 +129,11 @@ function EditPatientDetails({ route, navigation }) {
         />
         <Text style={styles.label}>Select Gender</Text>
         <View style={styles.labelContainer}>
-          <RadioButtonGroup
-            options={['Male', 'Female']} // Options for the gender
-            selectedOption={patient.gender} // Selected gender
-            onOptionSelect={(value) => handleChange('gender', value)} // Update gender
-          />
+        <RadioButtonGroup
+  options={['Male', 'Female']} // Options for the gender
+  selectedOption={patient.gender === 1 ? 'Female' : 'Male'} // Selected gender
+  onOptionSelect={(value) => handleChange('gender', value)} // Update gender
+/>
         </View>
         <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
           <Text style={styles.loginButtonText}>Update</Text>
@@ -181,6 +182,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#ED1703',
+    marginTop: 20,
     padding: 10,
     borderRadius: 10,
     width: 300,

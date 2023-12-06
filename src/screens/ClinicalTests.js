@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert, Image } from 'react-native';
+
+// Import your images
+import searchIcon from '../../assets/icons/magnifying-glass.png';
+import deleteIcon from '../../assets/icons/delete.png';
+import editIcon from '../../assets/icons/user-avatar.png';
+import eyeIcon from '../../assets/icons/info.png';
+import plusIcon from '../../assets/icons/add-event.png';
+import cross from '../../assets/icons/close.png';
 
 function ClinicalTests({ navigation }) {
   const [searchText, setSearchText] = useState('');
@@ -12,7 +19,9 @@ function ClinicalTests({ navigation }) {
       try {
         const response = await fetch('https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests');
         const data = await response.json();
-        setClinicalTests(data.data);
+        // Sort the clinical tests by creationDateTime in descending order
+        const sortedClinicalTests = data.data.sort((a, b) => new Date(b.creationDateTime) - new Date(a.creationDateTime));
+        setClinicalTests(sortedClinicalTests);
       } catch (error) {
         console.error('Error fetching clinical tests:', error);
       }
@@ -20,6 +29,11 @@ function ClinicalTests({ navigation }) {
 
     fetchClinicalTests();
   }, []);
+
+  // Function to sort clinical tests by creationDateTime in descending order
+  const sortClinicalTestsByDate = (tests) => {
+    return tests.sort((a, b) => new Date(b.creationDateTime) - new Date(a.creationDateTime));
+  };
 
   const handleViewDetails = (clinicalTest) => {
     navigation.navigate('ClinicalTestDetails', { clinicalTestId: clinicalTest._id });
@@ -53,7 +67,7 @@ function ClinicalTests({ navigation }) {
                   // Reload the clinical tests list after deletion (you can update this part)
                   fetch('https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests')
                     .then((response) => response.json())
-                    .then((data) => setClinicalTests(data.data))
+                    .then((data) => setClinicalTests(sortClinicalTestsByDate(data.data)))
                     .catch((error) => console.error('Error fetching clinical tests:', error));
                 } else {
                   console.error('Error deleting clinical test:', response.status);
@@ -72,10 +86,12 @@ function ClinicalTests({ navigation }) {
   const handleSearch = () => {
     // Implement your search logic here
     // You can use the 'searchText' state to filter the list of clinical tests
-    const filteredResults = clinicalTests.filter((clinicalTest) =>
-      `${clinicalTest.patient?.firstName} ${clinicalTest.patient?.lastName}`
-        .toLowerCase()
-        .includes(searchText.toLowerCase())
+    const filteredResults = sortClinicalTestsByDate(
+      clinicalTests.filter((clinicalTest) =>
+        `${clinicalTest.patient?.firstName} ${clinicalTest.patient?.lastName}`
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+      )
     );
     setSearchResults(filteredResults);
   };
@@ -97,16 +113,16 @@ function ClinicalTests({ navigation }) {
           />
           {searchText.length > 0 && (
             <TouchableOpacity style={styles.clearSearchButton} onPress={handleClearSearch}>
-              <Icon name="times" size={20} color="gray" />
+              <Image source={cross} style={[styles.iconImage, { tintColor: 'black' }]} />
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Icon name="search" size={20} color="gray" />
+            <Image source={searchIcon} style={[styles.iconImage, { tintColor: 'black' }]} />
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
-        {(searchResults.length > 0 ? searchResults : clinicalTests).map((clinicalTest, index) => (
+        {(searchResults.length > 0 ? searchResults : sortClinicalTestsByDate(clinicalTests)).map((clinicalTest, index) => (
           <View style={styles.card} key={index}>
             <View style={styles.cardTop}>
               <Text style={styles.cardName}>
@@ -118,32 +134,32 @@ function ClinicalTests({ navigation }) {
             </View>
             <View style={styles.buttonGroup}>
               <TouchableOpacity style={styles.buttonFilled} onPress={() => handleDelete(clinicalTest._id)}>
-                <Icon name="trash" size={20} color="white" />
+                <Image source={deleteIcon} style={[styles.iconImage, { tintColor: 'white' }]} />
               </TouchableOpacity>
               <TouchableOpacity
-      style={styles.buttonFilled}
-      onPress={() => navigation.navigate('EditClinicalTest', { clinicalTestId: clinicalTest._id })}
-    >
-      <Icon name="pencil" size={20} color="white" />
-    </TouchableOpacity>
+                style={styles.buttonFilled}
+                onPress={() => navigation.navigate('EditClinicalTest', { clinicalTestId: clinicalTest._id })}
+              >
+                <Image source={editIcon} style={[styles.iconImage, { tintColor: 'white' }]} />
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonFilled}
                 onPress={() => handleViewDetails(clinicalTest)}
               >
-                <Icon name="eye" size={20} color="white" />
+                <Image source={eyeIcon} style={[styles.iconImage, { tintColor: 'white' }]} />
               </TouchableOpacity>
               <TouchableOpacity
-              style={styles.buttonFilled}
-              onPress={() =>
-                handleAddClinicalTest(
-                  clinicalTest.patient?._id,
-                  clinicalTest.patient?.firstName,
-                  clinicalTest.patient?.lastName
-                )
-              }
-            >
-              <Icon name="plus" size={17} color="white" />
-            </TouchableOpacity>
+                style={styles.buttonFilled}
+                onPress={() =>
+                  handleAddClinicalTest(
+                    clinicalTest.patient?._id,
+                    clinicalTest.patient?.firstName,
+                    clinicalTest.patient?.lastName
+                  )
+                }
+              >
+                <Image source={plusIcon} style={[styles.iconImage, { tintColor: 'white' }]} />
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -186,13 +202,9 @@ const styles = StyleSheet.create({
   clearSearchButton: {
     padding: 10,
   },
-  addButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ED1703',
-    borderRadius: 50,
-    width: 40,
-    height: 40,
+  iconImage: {
+    width: 20,
+    height: 20,
   },
   cardContainer: {
     flexDirection: 'row',

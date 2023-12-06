@@ -1,24 +1,72 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';  // Import Image from react-native
+import editIcon from '../../assets/icons/user-avatar.png';
+import deleteIcon from '../../assets/icons/delete.png';
+import axios from 'axios';
 
 function PatientsDetailsScreen({ navigation, route }) {
   // Get the patient's information from the route parameter
-  const { patient } = route.params;
+  const { patient, setPatients } = route.params;
 
   // Define a function to display gender as 'Male' or 'Female'
   const getGenderText = (gender) => {
     return gender === 0 ? 'Male' : gender === 1 ? 'Female' : 'Unknown';
   };
 
+  const handleDelete = (patientId) => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this patient?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            axios
+              .delete(`https://group3-mapd713.onrender.com/patient/delete/${patientId}`)
+              .then((response) => {
+                console.log('Patient deleted successfully:', response.data);
+  
+                // Reload the patients list after deletion
+                axios
+                  .get('https://group3-mapd713.onrender.com/patient/list')
+                  .then((response) => {
+                    if (Array.isArray(response.data.data)) {
+                      // Check critical condition for each patient
+                      response.data.data.forEach((patient) =>
+                        isCriticalPatient(patient._id)
+                      );
+  
+                      // Pass the updated patients list back to the previous screen
+                      navigation.goBack({ patients: response.data.data });
+                    }
+                  })
+                  .catch((error) => {
+                    console.error('Error fetching patients:', error);
+                  });
+              })
+              .catch((error) => {
+                console.error('Error deleting patient:', error);
+              });
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+  
+
+  const handleEdit = (patientId) => {
+    navigation.navigate('EditPatientDetails', { patientId });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.nameLabel}>{patient.firstName} {patient.lastName}</Text>
 
-      {/* <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Case Number:</Text>
-        <Text style={styles.detailInfo}>{patient._id}</Text>
-      </View> */}
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Height:</Text>
         <Text style={styles.detailInfo}>{patient.height}</Text>
@@ -36,7 +84,7 @@ function PatientsDetailsScreen({ navigation, route }) {
         <Text style={styles.detailInfo}>{patient.phoneNumber}</Text>
       </View>
       <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>email Id:</Text>
+        <Text style={styles.detailLabel}>Email Id:</Text>
         <Text style={styles.detailInfo}>{patient.email}</Text>
       </View>
       <View style={styles.detailRow}>
@@ -47,22 +95,22 @@ function PatientsDetailsScreen({ navigation, route }) {
       <View style={styles.buttonGroup}>
         <TouchableOpacity
           style={styles.buttonFilled}
-          onPress={() => navigation.navigate('EditPatientDetails', { patient })}
+          onPress={() => handleEdit(patient._id)}
         >
-          <Icon name="edit" size={20} color="white" />
+          <Image source={editIcon} style={styles.iconImage} />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonFilled}
-          onPress={() => { /* Handle delete user action */ }}
-        >
-          <Icon name="trash" size={20} color="white" />
-        </TouchableOpacity>
+
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  iconImage: {
+    width: 20,
+    height: 20,
+    tintColor: 'white',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

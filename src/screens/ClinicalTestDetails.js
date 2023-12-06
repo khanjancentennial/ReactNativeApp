@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import editIcon from '../../assets/icons/user-avatar.png';
 
 function ClinicalTestDetails({ navigation, route }) {
   const { clinicalTestId } = route.params;
@@ -30,39 +30,6 @@ function ClinicalTestDetails({ navigation, route }) {
     navigation.navigate('EditClinicalTest', { clinicalTestId });
   };
 
-  const handleDelete = () => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete this clinical test?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          onPress: () => {
-            fetch(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`, {
-              method: 'DELETE',
-            })
-              .then((response) => {
-                if (response.ok) {
-                  console.log('Clinical test deleted successfully');
-                  navigation.goBack();
-                } else {
-                  console.error('Error deleting clinical test:', response.status);
-                }
-              })
-              .catch((error) => {
-                console.error('Error deleting clinical test:', error);
-              });
-          },
-          style: 'destructive',
-        },
-      ]
-    );
-  };
-
   if (!clinicalTest) {
     return (
       <View style={styles.container}>
@@ -82,10 +49,7 @@ function ClinicalTestDetails({ navigation, route }) {
 
         <View style={styles.buttonGroup}>
           <TouchableOpacity style={styles.buttonFilled} onPress={handleEdit}>
-            <Icon name="edit" size={20} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonFilled} onPress={handleDelete}>
-            <Icon name="trash" size={20} color="white" />
+            <Image source={editIcon} style={styles.iconImage} />
           </TouchableOpacity>
         </View>
       </View>
@@ -193,6 +157,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconImage: {
+    width: 20,
+    height: 20,
+    tintColor: 'white',
   },
 });
 

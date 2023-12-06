@@ -4,6 +4,7 @@ import axios from 'axios';
 
 function EditClinicalTestScreen({ route, navigation }) {
   const { clinicalTestId } = route.params;
+  console.log('clinicalTestId:', clinicalTestId);
 
   const [clinicalTestDetails, setClinicalTestDetails] = useState({
     bloodPressure: '',
@@ -19,41 +20,35 @@ function EditClinicalTestScreen({ route, navigation }) {
   useEffect(() => {
     const fetchClinicalTestDetails = async () => {
       try {
-        console.log('1', clinicalTestId);
         const response = await axios.get(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`);
-        console.log('2', clinicalTestId, response.data);
+        console.log('API Response:', response.data);
   
-        if (response.data.success) {
-          const testDataArray = response.data.data;
-  
-          if (testDataArray.length > 0) {
-            const testData = testDataArray[0]; // Assuming the data is an array with a single item
-  
-            setClinicalTestDetails({
-              bloodPressure: testData.bloodPressure,
-              respiratoryRate: testData.respiratoryRate,
-              bloodOxygenLevel: testData.bloodOxygenLevel,
-              heartbeatRate: testData.heartbeatRate,
-              chiefcomplaint: testData.chiefComplaint,
-              pastMedicalHistory: testData.pastMedicalHistory,
-              medicalDiagnosis: testData.medicalDiagnosis,
-              medicalPrescription: testData.medicalPrescription,
-            });
-          } else {
-            // Handle the case where no data is found for the given clinical test ID
-            console.warn('No clinical test data found for the provided ID.');
-          }
+        if (response.data.success && response.data.data.length > 0) {
+          // Extract and set clinical test details
+          const testData = response.data.data[0];
+          console.log('Test Data:', testData); // Add this line to log testData
+          setClinicalTestDetails({
+            bloodPressure: testData.bloodPressure.toString(),
+            respiratoryRate: testData.respiratoryRate.toString(),
+            bloodOxygenLevel: testData.bloodOxygenLevel.toString(),
+            heartbeatRate: testData.heartbeatRate.toString(),
+            chiefcomplaint: testData.chiefComplaint,
+            pastMedicalHistory: testData.pastMedicalHistory,
+            medicalDiagnosis: testData.medicalDiagnosis,
+            medicalPrescription: testData.medicalPrescription,
+          });
         } else {
-          throw new Error('Failed to fetch clinical test details');
+          // Handle the case where no data is found for the given clinical test ID
+          console.warn('No clinical test data found for the provided ID.');
         }
       } catch (error) {
         console.error('Error fetching clinical test details:', error);
         Alert.alert('Error', 'Failed to fetch clinical test details. Please try again later.');
       }
     };
-  
+    
     fetchClinicalTestDetails();
-  }, [clinicalTestId]);  
+  }, [clinicalTestId]);
   
 
   const handleUpdate = async () => {
@@ -62,13 +57,13 @@ function EditClinicalTestScreen({ route, navigation }) {
       if (!isValidClinicalTestDetails(clinicalTestDetails)) {
         throw new Error('Invalid clinical test details. Please check your input.');
       }
-  
+
       // Send the update request
       const response = await axios.put(
         `https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`,
         clinicalTestDetails
       );
-  
+
       if (response.data.success) {
         // Navigate to the ClinicalTests screen after successful update
         navigation.navigate('ClinicalTests');
@@ -80,7 +75,7 @@ function EditClinicalTestScreen({ route, navigation }) {
       Alert.alert('Error', 'Failed to update clinical test details. Please check your input and try again.');
     }
   };
-  
+
   // Validate clinical test details function
   const isValidClinicalTestDetails = (details) => {
     // Add your validation logic here
@@ -97,7 +92,11 @@ function EditClinicalTestScreen({ route, navigation }) {
       // Add validation for other fields as needed
     );
   };
-  
+
+  const handleChange = (field, value) => {
+    // Update the clinicalTestDetails state with the entered value
+    setClinicalTestDetails({ ...clinicalTestDetails, [field]: value });
+  };
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -106,25 +105,25 @@ function EditClinicalTestScreen({ route, navigation }) {
           style={styles.input}
           placeholder="Enter Blood Pressure (X/Y mmHg)"
           value={clinicalTestDetails.bloodPressure}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, bloodPressure: text })}
+          onChangeText={(text) => handleChange('bloodPressure', text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter Respiratory Rate (X/min)"
           value={clinicalTestDetails.respiratoryRate}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, respiratoryRate: text })}
+          onChangeText={(text) => handleChange('respiratoryRate', text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter Blood Oxygen Level (X%)"
           value={clinicalTestDetails.bloodOxygenLevel}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, bloodOxygenLevel: text })}
+          onChangeText={(text) => handleChange('bloodOxygenLevel', text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter Heartbeat Rate (X/min)"
           value={clinicalTestDetails.heartbeatRate}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, heartbeatRate: text })}
+          onChangeText={(text) => handleChange('heartbeatRate', text)}
         />
 
         <TextInput
@@ -133,7 +132,7 @@ function EditClinicalTestScreen({ route, navigation }) {
           value={clinicalTestDetails.chiefcomplaint}
           multiline={true}
           numberOfLines={4}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, chiefcomplaint: text })}
+          onChangeText={(text) => handleChange('chiefcomplaint', text)}
         />
         <TextInput
           style={styles.inputForMultilines}
@@ -141,7 +140,7 @@ function EditClinicalTestScreen({ route, navigation }) {
           value={clinicalTestDetails.pastMedicalHistory}
           multiline={true}
           numberOfLines={4}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, pastMedicalHistory: text })}
+          onChangeText={(text) => handleChange('pastMedicalHistory', text)}
         />
 
         <TextInput
@@ -150,7 +149,7 @@ function EditClinicalTestScreen({ route, navigation }) {
           value={clinicalTestDetails.medicalDiagnosis}
           multiline={true}
           numberOfLines={4}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, medicalDiagnosis: text })}
+          onChangeText={(text) => handleChange('medicalDiagnosis', text)}
         />
 
         <TextInput
@@ -159,7 +158,7 @@ function EditClinicalTestScreen({ route, navigation }) {
           value={clinicalTestDetails.medicalPrescription}
           multiline={true}
           numberOfLines={4}
-          onChangeText={(text) => setClinicalTestDetails({ ...clinicalTestDetails, medicalPrescription: text })}
+          onChangeText={(text) => handleChange('medicalPrescription', text)}
         />
 
         <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>

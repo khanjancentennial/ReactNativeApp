@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+// Import your search and cross icon images
+import searchIcon from '../../assets/icons/magnifying-glass.png';
+import crossIcon from '../../assets/icons/close.png';
 
 function CriticalPatients({ navigation }) {
   const [searchText, setSearchText] = useState(''); // State to store the search text
   const [criticalPatients, setCriticalPatients] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [patientsFound, setPatientsFound] = useState(true);
 
   useEffect(() => {
     const fetchCriticalPatients = async () => {
@@ -20,9 +26,22 @@ function CriticalPatients({ navigation }) {
     fetchCriticalPatients();
   }, []);
 
+  const filterPatients = () => {
+    // Filter critical patients based on search input
+    const filteredPatients = criticalPatients.filter((clinicalTest) => {
+      const patientInfo = clinicalTest.patientInfo.firstName.toLowerCase() + ' ' + clinicalTest.patientInfo.email.toLowerCase() + ' ' + clinicalTest.patientInfo.lastName.toLowerCase();
+      return patientInfo.includes(searchText.toLowerCase());
+    });
+    setSearchResults(filteredPatients);
+  };
+
   const handleSearch = () => {
-    // Implement your search logic here
-    // You can use the 'searchText' state to filter the list of critical patients
+    filterPatients();
+  };
+
+  const clearSearch = () => {
+    setSearchText('');
+    setSearchResults([]);
   };
 
   return (
@@ -36,29 +55,35 @@ function CriticalPatients({ navigation }) {
             onChangeText={(text) => setSearchText(text)}
           />
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Icon name="search" size={20} color="gray" />
+            <Image source={searchIcon} style={styles.searchIcon} />
           </TouchableOpacity>
+          {searchText.length > 0 && (
+            <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
+              <Image source={crossIcon} style={styles.crossIcon} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.cardContainer}>
-        {criticalPatients.map((clinicalTest, index) => (
+        {(searchResults.length > 0 ? searchResults : criticalPatients).map((clinicalTest, index) => (
           <View style={styles.card} key={index}>
             <Text style={styles.cardName}>{clinicalTest.patientInfo.firstName} {clinicalTest.patientInfo.lastName}</Text>
             <Text style={styles.cardInfo}>{`Mail ID: ${clinicalTest.patientInfo.email}`}</Text>
             <View style={styles.buttonContainer}>
-            <TouchableOpacity
-  style={styles.viewDetailsButton}
-  onPress={() => {
-    console.log('Selected Patient:', clinicalTest); // Log the selected patient details
-    navigation.navigate('ViewCriticalPatientDetails', { clinicalTest });
-  }}
->
-  <Text style={styles.viewDetailsButtonText}>View Details</Text>
-</TouchableOpacity>
+              <TouchableOpacity
+                style={styles.viewDetailsButton}
+                onPress={() => {
+                  console.log('Selected Patient:', clinicalTest); // Log the selected patient details
+                  navigation.navigate('ViewCriticalPatientDetails', { clinicalTest });
+                }}
+              >
+                <Text style={styles.viewDetailsButtonText}>View Details</Text>
+              </TouchableOpacity>
             </View>
           </View>
         ))}
       </ScrollView>
+      {!searchResults.length && !patientsFound && <Text>No users found</Text>}
     </View>
   );
 }
@@ -93,6 +118,19 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     padding: 10,
+  },
+  clearSearchButton: {
+    padding: 10,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    tintColor: 'black', // Set the color to black
+  },
+  crossIcon: {
+    width: 20,
+    height: 20,
+    tintColor: 'black', // Set the color to black
   },
   cardContainer: {
     flexDirection: 'row',

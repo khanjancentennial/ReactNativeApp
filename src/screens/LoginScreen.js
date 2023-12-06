@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 function LoginScreen({ navigation }) {
@@ -41,7 +40,7 @@ function LoginScreen({ navigation }) {
           } else {
             Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
           }
-        })        
+        })
         .catch((error) => {
           if (error instanceof TypeError && error.message === 'Network request failed') {
             Alert.alert('Network Error', 'Please check your internet connection and try again.');
@@ -54,7 +53,6 @@ function LoginScreen({ navigation }) {
         });
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -67,7 +65,7 @@ function LoginScreen({ navigation }) {
       />
       <View style={styles.passwordContainer}>
         <TextInput
-          style={styles.passwordInput}
+          style={[styles.passwordInput, { width: 300 }]} // Set the width to 300
           placeholder="Password"
           secureTextEntry={!showPassword}
           value={password}
@@ -77,10 +75,10 @@ function LoginScreen({ navigation }) {
           style={styles.showPasswordButton}
           onPress={() => setShowPassword(!showPassword)}
         >
-          <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="gray" />
+          <Image source={showPassword ? require('../../assets/icons/invisible.png') : require('../../assets/icons/visible.png')} style={styles.iconImage} />
         </TouchableOpacity>
       </View>
-      {isLoading ? ( // Display loading indicator if isLoading is true
+      {isLoading ? (
         <ActivityIndicator size="large" color="#ED1703" />
       ) : (
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
@@ -135,6 +133,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: 10,
+  },
+  iconImage: {
+    width: 20,
+    height: 20,
   },
   loginButton: {
     backgroundColor: '#ED1703',

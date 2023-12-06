@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const RadioButtonGroup = ({ options, selectedOption, onOptionSelect }) => {
+  useEffect(() => {
+    console.log('Selected Option:', selectedOption);
+  }, [selectedOption]);
+
   return (
     <View style={styles.container}>
       {options.map((option, index) => (
         <TouchableOpacity
           key={index}
           style={styles.option}
-          onPress={() => onOptionSelect(option)}
+          onPress={() => onOptionSelect(index)}
         >
           <View style={styles.radio}>
-            {option === selectedOption && <View style={styles.selectedRadio} />}
+            {selectedOption === index && <View style={styles.selectedRadio} />}
           </View>
           <Text style={styles.optionLabel}>{option}</Text>
         </TouchableOpacity>
