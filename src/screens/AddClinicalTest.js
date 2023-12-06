@@ -57,7 +57,17 @@ function AddClinicalTestScreen({ navigation, route }) {
       ]);
       return;
     }
-    
+
+    // Additional validation to check if values are not above 800
+    if (parseInt(bloodPressure) > 800 || parseInt(respiratoryRate) > 800 || parseInt(bloodOxygenLevel) > 800 || parseInt(heartbeatRate) > 800) {
+      Alert.alert('Validation Error', 'Vital signs values should not exceed 800.', [
+        {
+          text: 'OK',
+        },
+      ]);
+      return;
+    }
+
       // Create a new clinical test object based on the provided JSON structure
       const newClinicalTest = {
         bloodPressure: parseInt(bloodPressure),
