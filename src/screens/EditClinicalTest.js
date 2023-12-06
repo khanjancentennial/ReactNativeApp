@@ -61,6 +61,15 @@ function EditClinicalTestScreen({ route, navigation }) {
 
   const handleUpdate = async () => {
     try {
+      // Validate input fields
+    if (!bloodPressure || !respiratoryRate || !bloodOxygenLevel || !heartbeatRate) {
+      Alert.alert('Validation Error', 'Please fill in all vital signs fields.', [
+        {
+          text: 'OK',
+        },
+      ]);
+      return;
+    }
       // Validate the clinicalTestDetails before sending the request
       if (!isValidClinicalTestDetails(clinicalTestDetails)) {
         throw new Error('Invalid clinical test details. Please check your input.');

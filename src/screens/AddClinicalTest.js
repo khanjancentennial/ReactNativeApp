@@ -47,6 +47,17 @@ function AddClinicalTestScreen({ navigation, route }) {
 
   const handleRegister = async () => {
     try {
+
+      // Validate input fields
+    if (!bloodPressure || !respiratoryRate || !bloodOxygenLevel || !heartbeatRate) {
+      Alert.alert('Validation Error', 'Please fill in all vital signs fields.', [
+        {
+          text: 'OK',
+        },
+      ]);
+      return;
+    }
+    
       // Create a new clinical test object based on the provided JSON structure
       const newClinicalTest = {
         bloodPressure: parseInt(bloodPressure),
@@ -71,6 +82,7 @@ function AddClinicalTestScreen({ navigation, route }) {
       });
   
       // Check if the request was successful
+
       if (response.ok) {
         console.log('Clinical test added successfully!');
         Alert.alert('Success', 'Clinical test added successfully!', [
