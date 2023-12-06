@@ -18,7 +18,7 @@ function MainPage({ navigation, route }) {
 
         const { data } = await response.json();
         const { firstName, lastName, healthcareProvider } = data;
-
+        console.log('Fetched User Data:', data);
         setUserName(`${firstName} ${lastName}`);
         setHealthcareProviderRole(healthcareProvider);
       } catch (error) {
@@ -117,7 +117,8 @@ function MainPage({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    paddingTop: 20,
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
     width: '100%',
