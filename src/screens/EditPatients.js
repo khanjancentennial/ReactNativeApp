@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
-import RadioButtonGroup from './../components/RadioButtonGroup'; // Import the RadioButtonGroup component
+import RadioButtonGroup from './../components/RadioButtonGroup';
 
 function EditPatientDetails({ route, navigation }) {
   const { patientId } = route.params;
@@ -17,67 +17,79 @@ function EditPatientDetails({ route, navigation }) {
   });
 
   useEffect(() => {
-    axios
-      .get(`https://group3-mapd713.onrender.com/patient/view/${patientId}`)
-      .then((response) => {
-        const patientData = response.data.data;
-        console.log('Received gender value:', patientData.gender);
-        // Map the gender value to 'Male' or 'Female'
-        const genderValue = patientData.gender === 1 ? 'Female' : 'Male';
-        console.log('Setting gender value:', genderValue);
-        setPatient({
-          firstName: patientData.firstName,
-          lastName: patientData.lastName,
-          phoneNumber: patientData.phoneNumber,
-          email: patientData.email,
-          height: patientData.height,
-          weight: patientData.weight,
-          address: patientData.address,
-          gender: genderValue,
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching patient data:', error);
-      });
-  }, [patientId]);  
-
-  const handleUpdate = () => {
-    // Send a PUT request to update the patient details
-    // Map the gender value back to '0' or '1'
-    const genderValue = patient.gender === 'Female' ? 1 : 0;
-    const updatedPatient = { ...patient, gender: genderValue };
+    const fetchPatientDetails = async () => {
+      try {
+        const response = await axios.get(`https://group3-mapd713.onrender.com/patient/view/${patientId}`);
   
-    axios
-      .put(`https://group3-mapd713.onrender.com/patient/patients/${patientId}`, updatedPatient)
-      .then((response) => {
-        console.log('Patient details updated successfully:', response.data);
-        
-        // Display success message
+        if (response.data.success) {
+          const patientData = response.data.data;
+  
+          if (patientData) {
+            console.log('Fetched Patient Data:', patientData);
+  
+            const genderValue = patientData.gender === 1 ? 1 : 0;
+  
+            setPatient({
+              firstName: patientData.firstName,
+              lastName: patientData.lastName,
+              phoneNumber: patientData.phoneNumber,
+              email: patientData.email,
+              height: patientData.height,
+              weight: patientData.weight,
+              address: patientData.address,
+              gender: genderValue,
+            });
+          } else {
+            throw new Error('Patient data is undefined');
+          }
+        } else {
+          throw new Error('Failed to fetch patient details');
+        }
+      } catch (error) {
+        console.error('Error fetching patient details:', error);
+        Alert.alert('Error', `Failed to fetch patient details. Error: ${error.message}`);
+      }
+    };
+  
+    fetchPatientDetails();
+  }, [patientId]);
+  
+  useEffect(() => {
+    console.log('Updated patient state:', patient);
+  }, [patient]);
+  
+
+  const handleUpdate = async () => {
+    try {
+      // Remove the mapping of gender value back to '0' or '1'
+      const updatedPatient = { ...patient };
+  
+      const response = await axios.put(`https://group3-mapd713.onrender.com/patient/patients/${patientId}`, updatedPatient);
+  
+      console.log('Update Response:', response.data);
+  
+      if (response.data.success) {
+        setPatient({ ...patient, ...response.data.data });
+  
         Alert.alert('Success', 'Patient details updated successfully', [
           {
             text: 'OK',
             onPress: () => navigation.navigate('AllPatients'),
           },
         ]);
-      })
-      .catch((error) => {
-        console.error('Error updating patient details:', error);
-        
-        // Display error message
-        Alert.alert('Error', 'Failed to update patient details. Please try again.', [
-          {
-            text: 'OK',
-          },
-        ]);
-      });
+      } else {
+        throw new Error('Failed to update patient details');
+      }
+    } catch (error) {
+      console.error('Error updating patient details:', error.message);
+      Alert.alert('Error', 'Failed to update patient details. Please try again.');
+    }
   };
   
 
   const handleChange = (field, value) => {
-    // Update the patient state with the selected gender value
     setPatient({ ...patient, [field]: value });
   };
-  
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -127,13 +139,14 @@ function EditPatientDetails({ route, navigation }) {
           numberOfLines={4}
           onChangeText={(text) => handleChange('address', text)}
         />
+        
         <Text style={styles.label}>Select Gender</Text>
         <View style={styles.labelContainer}>
-        <RadioButtonGroup
-  options={['Male', 'Female']} // Options for the gender
-  selectedOption={patient.gender === 1 ? 'Female' : 'Male'} // Selected gender
-  onOptionSelect={(value) => handleChange('gender', value)} // Update gender
-/>
+          <RadioButtonGroup
+            options={['Male', 'Female']}
+            selectedOption={patient.gender}
+            onOptionSelect={(value) => handleChange('gender', value)}
+          />
         </View>
         <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
           <Text style={styles.loginButtonText}>Update</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import RadioButtonGroup from './../components/RadioButtonGroup';
 
@@ -9,31 +9,42 @@ function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
-  const [gender, setGender] = useState(''); // Will store 'Male' or 'Female'
-  const [healthcareProvider, setHealthcareProvider] = useState(''); // Will store 'Doctor' or 'Nurse'
+  const [gender, setGender] = useState('Male'); // Default to 'Male'
+  const [healthcareProvider, setHealthcareProvider] = useState('Doctor'); // Default to 'Doctor'
   const [isLoading, setIsLoading] = useState(false); // State variable to track loading state
 
   const genders = ['Male', 'Female'];
   const healthcareProviders = ['Doctor', 'Nurse'];
 
+  useEffect(() => {
+    // Set default values if gender or healthcareProvider are empty
+    if (!gender) {
+      setGender('Male');
+    }
+    if (!healthcareProvider) {
+      setHealthcareProvider('Doctor');
+    }
+  }, [])
+
   const handleRegister = () => {
-    if (!firstName || !lastName || !password || !phoneNumber || !email || !gender || !healthcareProvider) {
+    if (!firstName || !lastName || !password || !phoneNumber || !email ) {
       Alert.alert('Validation Error', 'Please fill in all fields.');
       return;
     }
-
+  
     if (!/^\d+$/.test(phoneNumber) || phoneNumber.length !== 10) {
       Alert.alert('Validation Error', 'Please enter a valid 10-digit phone number.');
       return;
     }
-
+  
     if (!isValidEmail(email)) {
       Alert.alert('Validation Error', 'Please enter a valid email address.');
       return;
     }
-
+  
     const genderValue = gender === 'Male' ? 0 : 1;
-    const professionValue = healthcareProvider === 'Doctor' ? 0 : 1;
+    const professionValue = healthcareProvider === 'Nurse' ? 1 : 0;
+  
     const registrationData = {
       firstName,
       lastName,
@@ -43,9 +54,9 @@ function RegisterScreen({ navigation }) {
       gender: genderValue,
       healthcareProvider: professionValue,
     };
-
-    setIsLoading(true); // Set loading state to true
-
+  
+    setIsLoading(true);
+  
     fetch('https://group3-mapd713.onrender.com/auth/register', {
       method: 'POST',
       headers: {
@@ -74,9 +85,13 @@ function RegisterScreen({ navigation }) {
         Alert.alert('Error', 'An error occurred. Please try again later.');
       })
       .finally(() => {
-        setIsLoading(false); // Set loading state to false when the process is completed
+        setIsLoading(false);
       });
   };
+  
+  
+  
+  
 
   const isValidEmail = (email) => {
     // Regular expression to validate email

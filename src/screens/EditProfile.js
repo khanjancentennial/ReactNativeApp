@@ -22,18 +22,16 @@ function EditUserProfileScreen({ route, navigation }) {
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(`https://group3-mapd713.onrender.com/auth/users/${userId}`);
-  
+
         if (response.data.success) {
           const userData = response.data.data;
-  
+
           if (userData) {
-            console.log('Fetched User Data:', userData); // Log the userData to the console for debugging
-  
-            // Map the gender value to numeric (0 for Male, 1 for Female)
-            const genderValue = userData.gender === 'Female' ? 1 : 0;
-            // Map the healthcare provider value to numeric (0 for Doctor, 1 for Nurse)
-            const healthcareProviderValue = userData.healthcareProvider === 'Nurse' ? 1 : 0;
-  
+            console.log('Fetched User Data:', userData);
+
+            const genderValue = userData.gender; // No need to map, use the numeric value directly
+            const healthcareProviderValue = userData.healthcareProvider; // No need to map, use the numeric value directly
+
             setUserDetails({
               firstName: userData.firstName,
               lastName: userData.lastName,
@@ -54,40 +52,33 @@ function EditUserProfileScreen({ route, navigation }) {
         Alert.alert('Error', 'Failed to fetch user details. Please try again later.');
       }
     };
-  
+
     fetchUserDetails();
   }, [userId, navigation]);
-  
-  
-  
-  const handleUpdate = async (userId) => {
+
+  const handleUpdate = async () => {
     try {
-      const genderValue = userDetails.gender === 1 ? 1 : 0; // 0 for male, 1 for female
-      const healthcareProviderValue = userDetails.healthcareProvider === 1 ? 1 : 0; // 0 for doctor, 1 for nurse
-  
       const updatedUserDetails = {
         firstName: userDetails.firstName,
         lastName: userDetails.lastName,
         phoneNumber: userDetails.phoneNumber,
-        gender: genderValue,
-        healthcareProvider: healthcareProviderValue,
+        gender: userDetails.gender,
+        healthcareProvider: userDetails.healthcareProvider,
       };
-  
-      console.log('Updated User Details:', updatedUserDetails); // Log the updated details for debugging
-  
+
+      console.log('Updated User Details:', updatedUserDetails);
+
       const response = await axios.put(`https://group3-mapd713.onrender.com/auth/users/${userId}`, updatedUserDetails);
-  
-      console.log('Update Response:', response.data); // Log the server response for debugging
-  
+
+      console.log('Update Response:', response.data);
+
       if (response.data.success) {
-        // Update the userDetails state with the updated data
         setUserDetails({ ...userDetails, ...response.data.data });
-  
+
         Alert.alert('Success', 'User details updated successfully', [
           {
             text: 'OK',
             onPress: () => {
-              // Redirect to Home screen with userId as a parameter
               navigation.navigate('Main', { userId });
             },
           },
@@ -100,9 +91,6 @@ function EditUserProfileScreen({ route, navigation }) {
       Alert.alert('Error', 'Failed to update user details. Please try again.');
     }
   };
-  
-  
-     
 
   return (
     <View style={styles.container}>
@@ -147,9 +135,9 @@ function EditUserProfileScreen({ route, navigation }) {
           onOptionSelect={(value) => setUserDetails({ ...userDetails, healthcareProvider: value })}
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={() => handleUpdate(userId)}>
-  <Text style={styles.loginButtonText}>Update</Text>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
+        <Text style={styles.loginButtonText}>Update</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -157,7 +145,6 @@ function EditUserProfileScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EFE1E1',
   },
