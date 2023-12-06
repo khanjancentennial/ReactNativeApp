@@ -15,6 +15,7 @@ function EditClinicalTestScreen({ route, navigation }) {
     pastMedicalHistory: '',
     medicalDiagnosis: '',
     medicalPrescription: '',
+    patientId: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +25,7 @@ function EditClinicalTestScreen({ route, navigation }) {
       try {
         const response = await axios.get(`https://group3-mapd713.onrender.com/api/clinical-tests/clinical-testsById/${clinicalTestId}`);
         console.log('API Response:', response.data);
-  
+
         if (response.data.success && response.data.data) {
           // Extract and set clinical test details
           const testData = response.data.data;
@@ -38,7 +39,9 @@ function EditClinicalTestScreen({ route, navigation }) {
             pastMedicalHistory: testData.pastMedicalHistory,
             medicalDiagnosis: testData.medicalDiagnosis,
             medicalPrescription: testData.medicalPrescription,
+            patientId: testData.patient ? testData.patient._id : '',
           });
+          
         } else {
           // Handle the case where no data is found for the given clinical test ID
           console.warn('No clinical test data found for the provided ID.');
@@ -54,7 +57,7 @@ function EditClinicalTestScreen({ route, navigation }) {
 
     fetchClinicalTestDetails();
   }, [clinicalTestId]);
-  
+
 
   const handleUpdate = async () => {
     try {
@@ -62,23 +65,39 @@ function EditClinicalTestScreen({ route, navigation }) {
       if (!isValidClinicalTestDetails(clinicalTestDetails)) {
         throw new Error('Invalid clinical test details. Please check your input.');
       }
-  
-      console.log('Updating with data:', clinicalTestDetails);
-  
+
+      // Convert relevant fields to numbers
+      const updatedClinicalTestDetails = {
+        ...clinicalTestDetails,
+        bloodPressure: Number(clinicalTestDetails.bloodPressure),
+        respiratoryRate: Number(clinicalTestDetails.respiratoryRate),
+        bloodOxygenLevel: Number(clinicalTestDetails.bloodOxygenLevel),
+        heartbeatRate: Number(clinicalTestDetails.heartbeatRate),
+        chiefComplaint: clinicalTestDetails.chiefcomplaint, // Rename to match the server's field name
+        pastMedicalHistory: clinicalTestDetails.pastMedicalHistory,
+        medicalDiagnosis: clinicalTestDetails.medicalDiagnosis,
+        medicalPrescription: clinicalTestDetails.medicalPrescription,
+        creationDateTime: new Date().toISOString(), // Current date and time in ISO format
+        patientId: clinicalTestDetails.patient ? clinicalTestDetails.patient._id : '',
+      };
+
+      console.log('Updating with data:', updatedClinicalTestDetails);
+
       // Construct the URL
       const apiUrl = `https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests/${clinicalTestId}`;
       console.log('Update URL:', apiUrl);
-  
+
       // Send the update request
-      const response = await axios.put(apiUrl, clinicalTestDetails);
-  
+      const response = await axios.put(apiUrl, updatedClinicalTestDetails);
+
       console.log('Update Response:', response.data);
-  
+
       if (response.data.success) {
-        // Navigate to the ClinicalTests screen after successful update
+        // Navigate to the ClinicalTests screen after a successful update
         console.log('Clinical test details updated successfully!');
         navigation.navigate('ClinicalTests');
       } else {
+        console.error('Failed to update clinical test details. Server response:', response.data);
         throw new Error('Failed to update clinical test details.');
       }
     } catch (error) {
@@ -86,7 +105,7 @@ function EditClinicalTestScreen({ route, navigation }) {
       Alert.alert('Error', 'Failed to update clinical test details. Please check your input and try again.');
     }
   };
-  
+
 
   // Validate clinical test details function
   const isValidClinicalTestDetails = (details) => {
