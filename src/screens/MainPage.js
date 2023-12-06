@@ -4,11 +4,10 @@ import CardButton from '../components/CardButton';
 
 function MainPage({ navigation, route }) {
   const { userId } = route.params;
-  console.log('userId', userId);
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
-  
+  const [healthcareProviderRole, setHealthcareProviderRole] = useState(null);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -16,31 +15,26 @@ function MainPage({ navigation, route }) {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const { data } = await response.json();
-  
-        console.log('User data:', data);
-  
-        // Assuming your API response has firstName and lastName fields
-        const { firstName, lastName } = data;
+        const { firstName, lastName, healthcareProvider } = data;
+
         setUserName(`${firstName} ${lastName}`);
+        setHealthcareProviderRole(healthcareProvider);
       } catch (error) {
         console.error('Error fetching user data:', error);
-        // You can set a default username or handle the error accordingly
         setUserName('User');
       }
     };
-  
+
     fetchUserData();
   }, [userId]);
-  
 
   const handleCardClick = (destination) => {
     navigation.navigate(destination, { userId });
   };
 
   const handleLogout = () => {
-    // Assuming you use react-navigation to navigate to the LoginScreen
     Alert.alert(
       'Logout',
       'Are you sure you want to log out?',
@@ -52,10 +46,7 @@ function MainPage({ navigation, route }) {
         {
           text: 'Logout',
           onPress: () => {
-            // Show alert for successful logout
             Alert.alert('Logout', 'Logged out successfully');
-  
-            // Navigate to the LoginScreen
             navigation.navigate('Login');
           },
         },
@@ -63,7 +54,6 @@ function MainPage({ navigation, route }) {
       { cancelable: false }
     );
   };
-  
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -97,6 +87,7 @@ function MainPage({ navigation, route }) {
           )}
         </TouchableOpacity>
       </View>
+
       <CardButton
         style={styles.card}
         imageSource={require('../../assets/allPatients.jpg')}
@@ -109,12 +100,16 @@ function MainPage({ navigation, route }) {
         title="Critical Patients"
         onPress={() => handleCardClick('CriticalPatients')}
       />
-      <CardButton
-        style={styles.card}
-        imageSource={require('../../assets/addTest.jpg')}
-        title="Clinical Tests"
-        onPress={() => handleCardClick('ClinicalTests')}
-      />
+
+      {healthcareProviderRole === 0 && (
+        // Only show the "Clinical Tests" card if the healthcare provider is a doctor (role === 0)
+        <CardButton
+          style={styles.card}
+          imageSource={require('../../assets/addTest.jpg')}
+          title="Clinical Tests"
+          onPress={() => handleCardClick('ClinicalTests')}
+        />
+      )}
     </View>
   );
 }

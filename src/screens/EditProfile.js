@@ -60,10 +60,10 @@ function EditUserProfileScreen({ route, navigation }) {
   
   
   
-  const handleUpdate = async () => {
+  const handleUpdate = async (userId) => {
     try {
-      const genderValue = userDetails.gender === 1 ? 'Female' : 'Male';
-      const healthcareProviderValue = userDetails.healthcareProvider === 1 ? 'Nurse' : 'Doctor';
+      const genderValue = userDetails.gender === 1 ? 1 : 0; // 0 for male, 1 for female
+      const healthcareProviderValue = userDetails.healthcareProvider === 1 ? 1 : 0; // 0 for doctor, 1 for nurse
   
       const updatedUserDetails = {
         firstName: userDetails.firstName,
@@ -80,14 +80,15 @@ function EditUserProfileScreen({ route, navigation }) {
       console.log('Update Response:', response.data); // Log the server response for debugging
   
       if (response.data.success) {
-        // Assuming the response.data.user contains the updated user details
-        setUserDetails(response.data.data);
+        // Update the userDetails state with the updated data
+        setUserDetails({ ...userDetails, ...response.data.data });
   
         Alert.alert('Success', 'User details updated successfully', [
           {
             text: 'OK',
             onPress: () => {
-              navigation.navigate('Home');
+              // Redirect to Home screen with userId as a parameter
+              navigation.navigate('Main', { userId });
             },
           },
         ]);
@@ -101,6 +102,7 @@ function EditUserProfileScreen({ route, navigation }) {
   };
   
   
+     
 
   return (
     <View style={styles.container}>
@@ -145,9 +147,9 @@ function EditUserProfileScreen({ route, navigation }) {
           onOptionSelect={(value) => setUserDetails({ ...userDetails, healthcareProvider: value })}
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleUpdate}>
-        <Text style={styles.loginButtonText}>Update</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.loginButton} onPress={() => handleUpdate(userId)}>
+  <Text style={styles.loginButtonText}>Update</Text>
+</TouchableOpacity>
     </View>
   );
 }
