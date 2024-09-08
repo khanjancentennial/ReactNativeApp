@@ -43,7 +43,6 @@ function AppNavigator() {
         <Stack.Screen name="User Profile" component={UserProfileScreen} options={{headerTitle:'Profile'}}/>
         <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} options={{headerTitle:'Edit Profile'}} />
 
-
       </Stack.Navigator>
     </NavigationContainer>
   );
